@@ -1,4 +1,5 @@
 import { STATE_MESSAGES } from "../data/states";
+import { A1_MESSAGES } from "./en-a1";
 
 /**
  * admin-web English catalogue. Keys `admin.<screen>.<name>` follow docs/design/admin-a0-flows.md.
@@ -8,6 +9,7 @@ import { STATE_MESSAGES } from "../data/states";
  */
 export const en = {
   ...STATE_MESSAGES,
+  ...A1_MESSAGES,
 
   "admin.app.name": "Hostry Admin",
   "admin.nav.label": "Main",
@@ -268,11 +270,9 @@ export const en = {
   "admin.revoke.invalid": "Check the ticket reference, method and reason.",
   "admin.revoke.audit.note": "Recorded in the vendor audit log and in the organisation's own audit log.",
   "admin.revoke.approval.unavailable": "No second approver is available. The device stays active.",
-  "admin.revoke.approved.note": "A second person approved this. Confirm to complete the revoke.",
-  "admin.revoke.approval.needed": "This revoke is over the daily limit and needs a second Hostry person to approve. It is waiting in the approvals queue; the device stays active until then.",
+  "admin.revoke.approval.needed": "This revoke is over the daily limit and needs a second Hostry person to approve. It is waiting in the approvals queue; the device stays active until then, and is revoked the moment they approve.",
 
   "admin.approvals.title": "Approvals",
-  "admin.approvals.intro": "Device revokes over the daily limit wait here for a second person.",
   "admin.approvals.empty": "Nothing is waiting for approval.",
   "admin.approvals.col.org": "Organisation",
   "admin.approvals.col.device": "Device",

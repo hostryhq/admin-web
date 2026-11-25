@@ -28,6 +28,7 @@ export function toSession(a: Schemas["AdminSession"]): AdminSession {
   return {
     name: a.user.display_name,
     userId: a.user.id,
+    ...(a.user.can_approve_from ? { canApproveFrom: a.user.can_approve_from } : {}),
     permissions: a.user.permissions,
     expiresAt: a.absolute_expires_at,
     csrfToken: a.csrf_token,

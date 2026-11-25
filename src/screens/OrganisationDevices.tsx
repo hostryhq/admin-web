@@ -37,16 +37,6 @@ function Devices(props: { view: () => OrganisationView }): JSX.Element {
     (id) => outcome(api.GET("/v1/organisations/{organisation_id}/devices", { params: { path: { organisation_id: id } } })),
   );
 
-  // Approved two-person approvals of this user (an over-quota revoke is completed by repeating it with the approval id).
-  const approved = createQuery(
-    () => (canRevoke() ? "approved" : undefined),
-    () => outcome(api.GET("/v1/approvals", { params: { query: { state: "approved", limit: 100 } } })),
-  );
-  const approvalFor = (deviceId: string) =>
-    approved
-      .data()
-      ?.items.find((a) => a.kind === "device_revoke_over_quota" && a.subject_id === deviceId && a.requested_by === state.session()?.userId)?.id;
-
   const outletName = (id: string) => props.view().outlets.find((o) => o.id === id)?.name ?? id.slice(0, 8);
 
   const columns = (): Column<Device>[] => [
@@ -111,7 +101,6 @@ function Devices(props: { view: () => OrganisationView }): JSX.Element {
             organisationId={params.orgId}
             device={d()}
             outletName={outletName(d().outlet_id)}
-            approvalId={approvalFor(d().id)}
             onClose={() => setRevoking(undefined)}
             onDone={() => {
               setRevoking(undefined);

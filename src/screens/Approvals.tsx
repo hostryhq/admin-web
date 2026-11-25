@@ -1,72 +1,93 @@
 import { createSignal, Show, useContext } from "solid-js";
 import type { JSX } from "@solidjs/web";
-import { Button, DataTable, Dialog, InlineAlert, OtpField, PageHeader, toasts, useI18n, type Column } from "@hostry/ui-kit";
+import { Button, DataTable, InlineAlert, OneTimeReveal, OtpField, PageHeader, Panel, Tabs, toasts, useI18n, type Column } from "@hostry/ui-kit";
 import { useApi } from "../api/context";
+import { writeError } from "../api/errors";
 import { mut } from "../api/headers";
-import type { components } from "../generated";
 import { outcome } from "../api/outcome";
-import { createQuery } from "../api/query";
-import { ConfirmDialog } from "../components/ConfirmDialog";
+import { createPaged } from "../api/query";
 import { Empty, ErrorState, ist, shortId, StaleTag, useWriteGuard } from "../components/common";
+import { ApprovalStateBadge } from "../components/ledgerBadges";
 import { TextArea } from "../components/fields";
-import { formKeys } from "../components/formkeys";
-import { SessionContext } from "../session/session";
+import { formKeys, newIntentKey } from "../components/formkeys";
+import { remainingText } from "../components/remaining";
+import { APPROVE_PERMISSION } from "../session/permissions";
+import { hasPermission, SessionContext } from "../session/session";
 import { MIN_REASON } from "./StartSupportDialog";
+import { awaitsExecution, isExecuting, notExecutedKey, retryExecution, type Approval } from "./a1/approvalExec";
 
-type VendorApproval = components["schemas"]["VendorApproval"];
-const KIND = "device_revoke_over_quota";
+type Tab = "pending" | "mine" | "history";
 
 /**
- * Approvals queue (A0-S19, AC 90): pending device-revoke requests that need a second Hostry person
- * (two-person rule, ADR-0005 A2.3). Approve asks for a fresh TOTP code; Reject asks for a reason. The
- * list holds only this kind, the screen is hidden from users without `admin.device.revoke`, and the
- * requester's own request has no Approve (the server refuses it anyway). No override exists.
+ * AS21: approvals (A1-S22; AC 68 to 72, 76, 91, 95; ADR-0014 A1.3). One queue for every approval kind:
+ * a user sees only the kinds whose approve permission they hold (AC 91). The review panel shows what the
+ * request would do in words (`subject`, the reason, ticket and who asked) so an approver never signs an
+ * opaque request (security M8). The requester sees their own request with a countdown and no Approve
+ * (absent, not greyed). Approving an executing kind executes it: the row then reads Done, or "Approved,
+ * not executed" with the reason when a guard refused (open trading day, lead time), and the approver
+ * can try again until it lapses. No grant ever reaches the browser. There is no override.
  *
- * Gap against AC 90: the contract's approval record has no `reason` (only ticket, verification method
- * and requester), so no reason column is shown until the API returns one.
+ * Device revoke over the daily limit completes AT approval (P2C-1): approving revokes the device, and
+ * nothing is repeated afterwards.
  */
 export function Approvals(): JSX.Element {
   const { t } = useI18n();
   const api = useApi();
   const state = useContext(SessionContext);
   const guard = useWriteGuard();
-  const [approving, setApproving] = createSignal<VendorApproval | undefined>();
-  const [rejecting, setRejecting] = createSignal<VendorApproval | undefined>();
+  const me = () => state.session()?.userId;
+  const can = (p: string) => hasPermission(state.session(), p);
+  const [tab, setTab] = createSignal<Tab>("pending");
+  const [open, setOpen] = createSignal<Approval | undefined>();
 
-  const q = createQuery(
-    () => "pending",
-    () => outcome(api.GET("/v1/approvals", { params: { query: { state: "pending", limit: 100 } } })),
+  const paged = createPaged(
+    () => "approvals",
+    (_k, cursor) => outcome(api.GET("/v1/approvals", { params: { query: { limit: 100, ...(cursor ? { cursor } : {}) } } })),
   );
-  const rows = () => (q.data()?.items ?? []).filter((a) => a.kind === KIND && a.state === "pending");
-  const isOwn = (a: VendorApproval) => a.requested_by === state.session()?.userId;
+  const mayApprove = (a: Approval) => can("admin.approval.decide") && can(APPROVE_PERMISSION[a.kind]);
+  const isMine = (a: Approval) => a.requested_by === me();
+  const live = (a: Approval) => a.state === "pending" && !remainingText(a.expires_at).expired;
+  const needsMe = (a: Approval) => (live(a) && !isMine(a) && mayApprove(a)) || (awaitsExecution(a) && a.approved_by === me());
+  const rows = (): Approval[] => {
+    const all = paged.rows();
+    if (tab() === "mine") return all.filter(isMine);
+    if (tab() === "history") return all.filter((a) => !live(a) && !awaitsExecution(a));
+    return all.filter(needsMe);
+  };
+  const pendingCount = () => paged.rows().filter(needsMe).length;
+
   const done = (msg: string) => {
-    setApproving(undefined);
-    setRejecting(undefined);
+    setOpen(undefined);
     toasts.show(t(msg));
-    q.reload();
+    paged.first.reload();
   };
 
-  const columns: Column<VendorApproval>[] = [
-    { id: "org", header: t("admin.approvals.col.org"), cell: (a) => (a.organisation_id ? <code class="hy-num" title={a.organisation_id}>{shortId(a.organisation_id)}</code> : "") },
-    { id: "device", header: t("admin.approvals.col.device"), cell: (a) => (a.subject_id ? <code class="hy-num" title={a.subject_id}>{shortId(a.subject_id)}</code> : "") },
+  const columns: Column<Approval>[] = [
+    { id: "kind", header: t("admin.approvals.col.kind"), cell: (a) => t(`admin.approvals.kind.${a.kind}`) },
+    {
+      id: "item",
+      header: t("admin.approvals.col.item"),
+      cell: (a) => (
+        <span data-testid={`approval-item-${a.id}`}>
+          {a.subject ?? (a.organisation_id ? shortId(a.organisation_id) : "")}
+          <Show when={a.kind.startsWith("org_")}>
+            {" "}
+            <span class="hy-hint">{t("admin.approvals.shownowner")}</span>
+          </Show>
+        </span>
+      ),
+    },
+    { id: "requester", header: t("admin.approvals.col.requester"), cell: (a) => (isMine(a) ? t("admin.audit.you") : shortId(a.requested_by)) },
     { id: "ticket", header: t("admin.approvals.col.ticket"), cell: (a) => a.ticket_reference },
-    { id: "method", header: t("admin.approvals.col.method"), cell: (a) => t(`admin.revoke.method.${a.verification_method}`) },
-    { id: "requester", header: t("admin.approvals.col.requester"), cell: (a) => (isOwn(a) ? t("admin.audit.you") : shortId(a.requested_by)) },
-    { id: "created", header: t("admin.approvals.col.created"), cell: (a) => <span class="hy-num">{ist(a.created_at)}</span> },
+    { id: "state", header: t("admin.approvals.col.state"), cell: (a) => <ApprovalStateBadge state={a.state} executable={isExecuting(a)} /> },
+    { id: "expires", header: t("admin.approvals.col.expires"), cell: (a) => (a.state === "pending" ? <Countdown until={a.expires_at} /> : "") },
     {
       id: "actions",
       header: t("admin.devices.col.actions"),
       cell: (a) => (
-        <span class="hy-actions">
-          <Show when={!isOwn(a)}>
-            <Button variant="primary" disabled={guard.disabled()} title={guard.title()} data-testid={`approval-approve-${a.id}`} onClick={() => setApproving(a)}>
-              {t("admin.approvals.approve")}
-            </Button>
-          </Show>
-          <Button disabled={guard.disabled()} title={guard.title()} data-testid={`approval-reject-${a.id}`} onClick={() => setRejecting(a)}>
-            {t("admin.approvals.reject")}
-          </Button>
-        </span>
+        <Button variant="primary" data-testid={`approval-review-${a.id}`} onClick={() => setOpen(a)}>
+          {t("admin.approvals.review")}
+        </Button>
       ),
     },
   ];
@@ -74,132 +95,262 @@ export function Approvals(): JSX.Element {
   return (
     <>
       <PageHeader title={t("admin.approvals.title")} />
-      <p class="hy-hint">{t("admin.approvals.intro")}</p>
-      <StaleTag at={q.loadedAt()} />
-      <Show when={q.failure() && !q.data()}>
-        <ErrorState failure={q.failure()} onRetry={q.reload} data-testid="approvals-error" />
-      </Show>
-      <Show when={!q.failure() || q.data()}>
-        <DataTable
-          caption={t("admin.approvals.title")}
-          columns={columns}
-          rows={rows()}
-          rowKey={(a) => a.id}
-          loading={q.loading() && !q.data()}
-          empty={<Empty title={t("admin.approvals.empty")} data-testid="approvals-empty" />}
-          data-testid="approvals-table"
-        />
-      </Show>
-
-      <Dialog open={approving() !== undefined} title={t("admin.approvals.approve")} onClose={() => setApproving(undefined)} data-testid="approve-dialog">
-        <ApproveForm
-          approval={approving()}
-          onClose={() => setApproving(undefined)}
-          run={async (code) => {
-            const a = approving();
-            if (!a) return undefined;
-            const r = await outcome(
-              api.PUT("/v1/approvals/{approval_id}/decision", { params: { path: { approval_id: a.id }, header: mut() }, body: { totp_code: code } }),
-            );
-            if (r.ok) {
-              done("admin.approvals.approved");
-              return undefined;
-            }
-            return r.failure.code === "second_approver_unavailable" ? "admin.approvals.error.unavailable" : r.failure.status === 503 ? "admin.error.upstream" : "admin.approvals.error.refused";
-          }}
-        />
-      </Dialog>
-      <Show when={rejecting()}>
-        {(a) => (
-          <RejectDialog
-            onClose={() => setRejecting(undefined)}
-            run={async (reason) => {
-              const r = await outcome(
-                api.PUT("/v1/approvals/{approval_id}/cancellation", { params: { path: { approval_id: a().id }, header: mut() }, body: { reason } }),
-              );
-              if (r.ok) {
-                done("admin.approvals.rejected");
-                return undefined;
-              }
-              return r.failure.status === 503 ? "admin.error.upstream" : "admin.approvals.error.refused";
-            }}
+      <StaleTag at={paged.first.loadedAt()} />
+      <Tabs
+        label={t("admin.approvals.title")}
+        tabs={[
+          { id: "pending", label: `${t("admin.approvals.tab.pending")} (${pendingCount()})`, "data-testid": "approvals-tab-pending" },
+          { id: "mine", label: t("admin.approvals.tab.mine"), "data-testid": "approvals-tab-mine" },
+          { id: "history", label: t("admin.approvals.tab.history"), "data-testid": "approvals-tab-history" },
+        ]}
+        selected={tab()}
+        onSelect={(id) => setTab(id as Tab)}
+      >
+        <Show when={paged.first.failure() && !paged.first.data()}>
+          <ErrorState failure={paged.first.failure()} onRetry={paged.first.reload} data-testid="approvals-error" />
+        </Show>
+        <Show when={!paged.first.failure() || paged.first.data()}>
+          <DataTable
+            caption={t("admin.approvals.title")}
+            columns={columns}
+            rows={rows()}
+            rowKey={(a) => a.id}
+            loading={paged.first.loading() && !paged.first.data()}
+            onOpen={(a) => setOpen(a)}
+            empty={<Empty title={t("admin.approvals.empty")} data-testid="approvals-empty" />}
+            data-testid="approvals-table"
           />
+        </Show>
+        <Show when={paged.hasMore()}>
+          <p>
+            <Button disabled={paged.moreBusy()} onClick={paged.more} data-testid="approvals-more">
+              {t("admin.common.more")}
+            </Button>
+          </p>
+        </Show>
+      </Tabs>
+      <Show when={open()}>
+        {(a) => (
+          <Panel title={t(`admin.approvals.kind.${a().kind}`)} open onClose={() => setOpen(undefined)} data-testid="approval-panel">
+            <Review approval={a()} mine={isMine(a())} mayApprove={mayApprove(a())} canCancel={can("admin.approval.decide")} guardDisabled={guard.disabled()} onDone={done} />
+          </Panel>
         )}
       </Show>
     </>
   );
 }
 
-function ApproveForm(props: { approval: VendorApproval | undefined; onClose: () => void; run: (code: string) => Promise<string | undefined> }): JSX.Element {
+function Countdown(props: { until: string }): JSX.Element {
   const { t } = useI18n();
-  const guard = useWriteGuard();
-  const [code, setCode] = createSignal("");
-  const [busy, setBusy] = createSignal(false);
-  const [error, setError] = createSignal<string | undefined>();
-  const valid = () => /^[0-9]{6}$/.test(code());
-
-  const submit = async (e: SubmitEvent) => {
-    e.preventDefault();
-    if (busy() || !valid() || guard.disabled()) return;
-    setBusy(true);
-    const err = await props.run(code());
-    setBusy(false);
-    if (err) {
-      setError(err);
-      setCode("");
-    }
-  };
+  const r = () => remainingText(props.until);
+  const left = () => (r().h > 0 ? t("admin.approvals.remaining.hm", { h: r().h, m: r().min }) : t("admin.approvals.remaining.m", { m: r().min }));
   return (
-    <form class="hy-stack" method="post" onSubmit={submit} onKeyDown={formKeys} novalidate>
-      <p>{t("admin.approvals.approve.body", { ticket: props.approval?.ticket_reference ?? "" })}</p>
-      <OtpField
-        name="code"
-        required
-        label={t("admin.approvals.totp")}
-        value={code()}
-        onInput={(e: InputEvent) => setCode((e.currentTarget as HTMLInputElement).value)}
-        data-autofocus
-        data-testid="approve-code"
-      />
-      <Show when={error()}>
-        <InlineAlert kind="danger" data-testid="approve-error">
-          {t(error() ?? "")}
-        </InlineAlert>
-      </Show>
-      <div class="hy-actions">
-        <Button onClick={props.onClose} data-testid="approve-cancel">
-          {t("admin.common.cancel")}
-        </Button>
-        <Button type="submit" variant="primary" disabled={!valid() || busy() || guard.disabled()} data-testid="approve-submit">
-          {t("admin.approvals.approve")}
-        </Button>
-      </div>
-    </form>
+    <span class="hy-num" data-testid="approval-countdown">
+      {r().expired ? t("admin.approvals.expired") : t("admin.approvals.expires", { t: left() })}
+    </span>
   );
 }
 
-function RejectDialog(props: { onClose: () => void; run: (reason: string) => Promise<string | undefined> }): JSX.Element {
+/** The review panel: what the request is, then approve (fresh code) / reject, or retry / cancel. */
+function Review(props: {
+  approval: Approval;
+  mine: boolean;
+  mayApprove: boolean;
+  canCancel: boolean;
+  guardDisabled: boolean;
+  onDone: (msg: string) => void;
+}): JSX.Element {
   const { t } = useI18n();
+  const api = useApi();
+  const state = useContext(SessionContext);
+  const a = () => props.approval;
+  const [code, setCode] = createSignal("");
   const [reason, setReason] = createSignal("");
+  const [rejecting, setRejecting] = createSignal(false);
+  const [busy, setBusy] = createSignal(false);
+  const [error, setError] = createSignal<string | undefined>();
+  const [notExecuted, setNotExecuted] = createSignal<string | undefined>();
+  const [half, setHalf] = createSignal<string | undefined>();
+  const key = newIntentKey();
+  const young = () => {
+    const from = state.session()?.canApproveFrom;
+    return from !== undefined && Date.parse(from) > Date.now();
+  };
+  const pending = () => a().state === "pending" && !remainingText(a().expires_at).expired;
+  const canApprove = () => pending() && !props.mine && props.mayApprove && !young();
+  // The approver who just saw a guard refuse (or whose earlier approval waits) may repeat the named operation.
+  const canRetry = () => notExecuted() !== undefined || (awaitsExecution(a()) && a().approved_by === state.session()?.userId);
+  const validCode = () => /^[0-9]{6}$/.test(code());
+  const disabled = () => busy() || props.guardDisabled;
+  const reasonOk = () => reason().trim().length >= MIN_REASON;
+
+  const approve = async (e: SubmitEvent) => {
+    e.preventDefault();
+    if (disabled() || !validCode()) return;
+    setBusy(true);
+    setError(undefined);
+    const r = await outcome(api.PUT("/v1/approvals/{approval_id}/decision", { params: { path: { approval_id: a().id }, header: mut(key) }, body: { totp_code: code() } }));
+    setBusy(false);
+    if (!r.ok) {
+      setCode("");
+      const f = r.failure;
+      setError(f.network || f.status === 503 ? writeError(f) : f.code === "second_approver_unavailable" ? "admin.approvals.error.unavailable" : "admin.approvals.error.refused");
+      return;
+    }
+    if (r.data.code_half) {
+      setHalf(r.data.code_half.half);
+      return;
+    }
+    if (r.data.execution?.state === "refused") {
+      setNotExecuted(notExecutedKey({}, r.data.execution.code));
+      return;
+    }
+    props.onDone(a().kind === "device_revoke_over_quota" ? "admin.approvals.approved" : isExecuting(a()) ? "admin.approvals.done" : "admin.approvals.approved.plain");
+  };
+
+  const retry = async () => {
+    if (disabled()) return;
+    setBusy(true);
+    setError(undefined);
+    const r = await retryExecution(api, a(), key);
+    setBusy(false);
+    if (!r.ok) {
+      setNotExecuted(notExecutedKey(r.failure));
+      return;
+    }
+    props.onDone("admin.approvals.done");
+  };
+
+  const reject = async () => {
+    if (disabled() || !reasonOk()) return;
+    setBusy(true);
+    setError(undefined);
+    const r = await outcome(api.PUT("/v1/approvals/{approval_id}/cancellation", { params: { path: { approval_id: a().id }, header: mut(key) }, body: { reason: reason().trim() } }));
+    setBusy(false);
+    if (!r.ok) {
+      setError(writeError(r.failure));
+      return;
+    }
+    props.onDone(props.mine ? "admin.approvals.cancelled" : "admin.approvals.rejected");
+  };
+
   return (
-    <ConfirmDialog
-      open
-      title={t("admin.approvals.reject")}
-      body={t("admin.approvals.reject.body")}
-      confirmLabel={t("admin.approvals.reject")}
-      danger
-      onClose={props.onClose}
-      run={() => (reason().trim().length < MIN_REASON ? Promise.resolve("admin.approvals.reason.short") : props.run(reason().trim()))}
-      data-testid="reject-dialog"
-    >
-      <TextArea
-        name="reason"
-        label={`${t("admin.revoke.reason")} *`}
-        value={reason()}
-        counter={t("admin.common.min.chars", { n: reason().trim().length, min: MIN_REASON })}
-        onInput={(e: InputEvent) => setReason((e.currentTarget as HTMLTextAreaElement).value)}
-        data-testid="reject-reason"
-      />
-    </ConfirmDialog>
+    <div class="hy-stack" data-testid="approval-review">
+      <dl class="hy-dl">
+        <dt>{t("admin.approvals.summary")}</dt>
+        <dd data-testid="approval-summary">{a().subject ?? t("admin.approvals.nosummary")}</dd>
+        <Show when={a().reason}>
+          <dt>{t("admin.approvals.reason")}</dt>
+          <dd data-testid="approval-reason">{a().reason}</dd>
+        </Show>
+        <dt>{t("admin.approvals.col.ticket")}</dt>
+        <dd data-testid="approval-ticket">{a().ticket_reference}</dd>
+        <dt>{t("admin.approvals.col.method")}</dt>
+        <dd>{t(`admin.revoke.method.${a().verification_method}`)}</dd>
+        <dt>{t("admin.approvals.col.requester")}</dt>
+        <dd>{props.mine ? t("admin.audit.you") : shortId(a().requested_by)}</dd>
+        <dt>{t("admin.approvals.requested")}</dt>
+        <dd class="hy-num">{ist(a().created_at)}</dd>
+        <Show when={a().state === "pending"}>
+          <dt>{t("admin.approvals.col.expires")}</dt>
+          <dd>
+            <Countdown until={a().expires_at} />
+          </dd>
+        </Show>
+      </dl>
+      <Show when={a().state !== "pending" && !awaitsExecution(a())}>
+        <p data-testid="approval-final">{t(`admin.approvals.final.${a().state}`)}</p>
+      </Show>
+      <Show when={notExecuted() || awaitsExecution(a())}>
+        <InlineAlert kind="warning" data-testid="approval-notexecuted">
+          {t("admin.approvals.notexecuted", { reason: t(notExecuted() ?? "admin.approvals.reason.unknown") })}
+        </InlineAlert>
+      </Show>
+      <Show when={pending() && props.mine}>
+        <p class="hy-hint" data-testid="approval-own">
+          {t("admin.approvals.own")}
+        </p>
+      </Show>
+      <Show when={pending() && !props.mine && props.mayApprove && young()}>
+        <p class="hy-hint" data-testid="approval-tooyoung">
+          {t("admin.approvals.tooyoung")}
+        </p>
+      </Show>
+      <Show when={half()}>
+        <OneTimeReveal label={t("admin.signin.half.b")} secret={half() ?? ""} onDone={() => props.onDone("admin.approvals.approved.plain")} data-testid="approval-half" />
+      </Show>
+      <Show when={canApprove() && !half()}>
+        <form class="hy-stack" method="post" onSubmit={approve} onKeyDown={formKeys} novalidate data-testid="approval-form">
+          <OtpField
+            name="code"
+            required
+            label={t("admin.approvals.totp")}
+            value={code()}
+            onInput={(e: InputEvent) => setCode((e.currentTarget as HTMLInputElement).value)}
+            data-autofocus
+            data-testid="approval-totp"
+          />
+          <Show when={rejecting()}>
+            <TextArea
+              name="reason"
+              label={`${t("admin.revoke.reason")} *`}
+              value={reason()}
+              counter={t("admin.common.min.chars", { n: reason().trim().length, min: MIN_REASON })}
+              onInput={(e: InputEvent) => setReason((e.currentTarget as HTMLTextAreaElement).value)}
+              data-testid="approval-reject-reason"
+            />
+          </Show>
+          <div class="hy-actions">
+            <Show
+              when={rejecting()}
+              fallback={
+                <Button data-testid="approval-reject" onClick={() => setRejecting(true)}>
+                  {t("admin.approvals.reject")}
+                </Button>
+              }
+            >
+              <Button variant="danger" disabled={disabled() || !reasonOk()} data-testid="approval-reject-confirm" onClick={() => void reject()}>
+                {t("admin.approvals.reject")}
+              </Button>
+            </Show>
+            <Button type="submit" variant="primary" disabled={!validCode() || disabled()} data-testid="approval-approve">
+              {t("admin.approvals.approve")}
+            </Button>
+          </div>
+        </form>
+      </Show>
+      <Show when={canRetry()}>
+        <Button variant="primary" disabled={disabled()} data-testid="approval-retry" onClick={() => void retry()}>
+          {t("admin.approvals.retry")}
+        </Button>
+      </Show>
+      <Show when={pending() && props.mine && props.canCancel}>
+        <Show
+          when={rejecting()}
+          fallback={
+            <Button data-testid="approval-cancel" onClick={() => setRejecting(true)}>
+              {t("admin.approvals.cancel")}
+            </Button>
+          }
+        >
+          <TextArea
+            name="reason"
+            label={`${t("admin.revoke.reason")} *`}
+            value={reason()}
+            counter={t("admin.common.min.chars", { n: reason().trim().length, min: MIN_REASON })}
+            onInput={(e: InputEvent) => setReason((e.currentTarget as HTMLTextAreaElement).value)}
+            data-testid="approval-cancel-reason"
+          />
+          <Button variant="danger" disabled={disabled() || !reasonOk()} data-testid="approval-cancel-confirm" onClick={() => void reject()}>
+            {t("admin.approvals.cancel")}
+          </Button>
+        </Show>
+      </Show>
+      <Show when={error()}>
+        <InlineAlert kind={error() === "admin.write.unknown" ? "warning" : "danger"} data-testid="approval-error">
+          {t(error() ?? "")}
+        </InlineAlert>
+      </Show>
+    </div>
   );
 }

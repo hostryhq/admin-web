@@ -1,4 +1,5 @@
 import { ROUTES } from "../routes";
+import { emitShortcut } from "../screens/a1/shortcutEvents";
 
 /** Global keyboard map from docs/design/admin-a0-flows.md section 0. j/k, Enter and Alt+1..5 live in ui-kit. */
 export type ShortcutDeps = {
@@ -55,6 +56,11 @@ export function createShortcutHandler(deps: ShortcutDeps): (e: KeyboardEvent) =>
         if (e.key === "o") return go(ROUTES.organisations.path, "admin.org.read");
         if (e.key === "a") return go(ROUTES.audit.path, ROUTES.audit.permission);
         if (e.key === "s") return go(ROUTES.staff.path, "admin.user.manage");
+        if (e.key === "b") return go(ROUTES.board.path, "admin.org.read");
+        if (e.key === "p") return go(ROUTES.plans.path, "admin.subscription.read");
+        if (e.key === "l") return go("/lists", "admin.subscription.read");
+        if (e.key === "t") return go(ROUTES.taxRules.path, "admin.taxrules.manage");
+        if (e.key === "v") return go(ROUTES.approvals.path, "admin.approval.read");
         return;
       }
     }
@@ -72,6 +78,12 @@ export function createShortcutHandler(deps: ShortcutDeps): (e: KeyboardEvent) =>
           deps.navigate(ROUTES.organisationNew.path);
         }
         break;
+      case "c":
+        if (deps.can("admin.subscription.manage")) emitShortcut("raise-charge");
+        break;
+      case "p":
+        if (deps.can("admin.subscription.manage")) emitShortcut("record-payment");
+        break;
       case "?":
         e.preventDefault();
         deps.openHelp();
@@ -88,6 +100,13 @@ export const SHORTCUTS: readonly ShortcutEntry[] = [
   { keys: "g o", labelKey: "admin.shortcuts.orgs", need: "admin.org.read" },
   { keys: "g a", labelKey: "admin.shortcuts.audit", need: ROUTES.audit.permission },
   { keys: "g s", labelKey: "admin.shortcuts.staff", need: "admin.user.manage" },
+  { keys: "g b", labelKey: "admin.shortcuts.board", need: "admin.org.read" },
+  { keys: "g p", labelKey: "admin.shortcuts.plans", need: "admin.subscription.read" },
+  { keys: "g l", labelKey: "admin.shortcuts.lists", need: "admin.subscription.read" },
+  { keys: "g t", labelKey: "admin.shortcuts.tax", need: "admin.taxrules.manage" },
+  { keys: "g v", labelKey: "admin.shortcuts.approvals", need: "admin.approval.read" },
+  { keys: "c", labelKey: "admin.shortcuts.raise", need: "admin.subscription.manage" },
+  { keys: "p", labelKey: "admin.shortcuts.pay", need: "admin.subscription.manage" },
   { keys: "n", labelKey: "admin.shortcuts.new", need: "admin.org.create" },
   { keys: "j / k", labelKey: "admin.shortcuts.rows" },
   { keys: "Enter", labelKey: "admin.shortcuts.open" },

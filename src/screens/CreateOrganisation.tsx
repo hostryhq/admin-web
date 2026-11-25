@@ -1,7 +1,7 @@
 import { createSignal, Show, useContext } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { useNavigate } from "@solidjs/router";
-import { Button, Dialog, InlineAlert, Input, PageHeader, useI18n } from "@hostry/ui-kit";
+import { Button, Dialog, InlineAlert, Input, PageHeader, WizardStepper, useI18n } from "@hostry/ui-kit";
 import { useApi } from "../api/context";
 import { mut } from "../api/headers";
 import type { components } from "../generated";
@@ -239,6 +239,17 @@ export function CreateOrganisation(): JSX.Element {
   return (
     <>
       <PageHeader title={t("admin.create.title")} />
+      <WizardStepper
+        label={t("admin.wizard.title")}
+        steps={[
+          { id: "org", label: t("admin.wizard.step.org"), status: "current" },
+          { id: "gstin", label: t("admin.wizard.step.gstin"), status: "next" },
+          { id: "plan", label: t("admin.wizard.step.plan"), status: "next" },
+          { id: "golive", label: t("admin.wizard.step.golive"), status: "next" },
+        ]}
+        onOpen={() => undefined}
+      />
+      <p class="hy-hint">{t("admin.wizard.stepof", { n: 1 })}</p>
       <p class="hy-hint">{t("admin.create.required.note")}</p>
       <form class="hy-stack" method="post" onSubmit={submit} onKeyDown={onKeyDown} novalidate data-testid="create-form">
         <Show when={(submitted() && !valid()) || err()}>
