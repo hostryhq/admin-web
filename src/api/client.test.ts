@@ -11,6 +11,27 @@ type Paths = {
 const json = () => new Response(JSON.stringify({ ok: true }), { headers: { "content-type": "application/json" } });
 
 describe("admin API client", () => {
+  it("sends the session's CSRF token on state-changing calls only", async () => {
+    const fetchFn = vi.fn((req: Request | string | URL) => Promise.resolve(req).then(json));
+    const api = createAdminApi<Paths>({ baseUrl: "http://admin.test", fetch: fetchFn as unknown as typeof fetch, getCsrfToken: () => "csrf-1" });
+    await api.GET("/v1/things");
+    await api.POST("/v1/things");
+    const [get, post] = fetchFn.mock.calls.map((c) => c[0] as Request);
+    expect(get?.headers.has("x-csrf-token")).toBe(false);
+    expect(post?.headers.get("x-csrf-token")).toBe("csrf-1");
+  });
+
+  it("tells the app when a signed-in call is answered 401 (the session ended), with the path", async () => {
+    const onUnauthorized = vi.fn();
+    const api = createAdminApi<Paths>({
+      baseUrl: "http://admin.test",
+      fetch: (async () => new Response("{}", { status: 401, headers: { "content-type": "application/problem+json" } })) as unknown as typeof fetch,
+      onUnauthorized,
+    });
+    await api.GET("/v1/things");
+    expect(onUnauthorized).toHaveBeenCalledWith("/v1/things");
+  });
+
   it("never sends an Authorization header (no token in the browser, ADR-0013 V6)", async () => {
     const fetchFn = vi.fn((req: Request | string | URL) => Promise.resolve(req).then(json));
     const api = createAdminApi<Paths>({ baseUrl: "http://admin.test", fetch: fetchFn as unknown as typeof fetch });
