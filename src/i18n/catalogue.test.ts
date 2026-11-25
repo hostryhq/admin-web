@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { createAppTranslator, en } from "./index";
-import { ALL_A0_PERMISSIONS } from "../session/session";
+import { ALL_PERMISSIONS } from "../session/permissions";
 import { ist } from "../components/common";
 
 const sources = import.meta.glob("/src/**/*.{ts,tsx}", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
-const files = Object.entries(sources).filter(([path]) => !/\.test\.tsx?$/.test(path) && !path.includes("/generated/") && !path.includes("/test/") && !path.endsWith("/i18n/en.ts"));
+const files = Object.entries(sources).filter(
+  ([path]) => !/\.test\.tsx?$/.test(path) && !path.includes("/generated/") && !path.includes("/test/") && !path.endsWith("/i18n/en.ts") && !path.endsWith("/i18n/en-a1.ts"),
+);
 
 // Permission strings share the `admin.` prefix with message keys; they are not messages.
-const PERMISSIONS = new Set<string>([...ALL_A0_PERMISSIONS, "admin.approval.read"]);
+const PERMISSIONS = new Set<string>([...ALL_PERMISSIONS]);
 
 describe("catalogue (AC 62: no string is hard-coded, keys only)", () => {
   it("every literal message key used in the source exists in the English catalogue", () => {
@@ -44,6 +46,29 @@ describe("catalogue (AC 62: no string is hard-coded, keys only)", () => {
       "admin.support.members.status": ["invited", "active", "suspended"],
       "admin.audit.result": ["succeeded", "refused", "failed"],
       "admin.devices.protection": ["hardware", "software"],
+      // Admin A1
+      "admin.board.item": ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"],
+      "admin.checklist.state": ["done", "notyet", "blocked", "unknown"],
+      "admin.charges.status": ["open", "part", "paid", "waived", "cancelled"],
+      "admin.plans.state": ["draft", "active", "retired"],
+      "admin.sub.state": ["pilot", "active", "cancelled"],
+      "admin.sub.cycle": ["none", "monthly", "annual"],
+      "admin.payment.method": ["upi", "bank_transfer", "cash", "cheque"],
+      "admin.plan.step.cycle": ["monthly", "annual"],
+      "admin.approvals.kind": ["tax_rule_set_publish", "org_suspend", "org_reinstate", "org_close", "device_revoke_over_quota", "sign_in_code", "owner_recovery"],
+      "admin.approvals.state": ["pending", "approved", "approved_waiting", "completed", "rejected", "expired", "cancelled"],
+      "admin.approvals.final": ["approved", "completed", "rejected", "expired", "cancelled"],
+      "admin.approvals.reason": ["open_trading_day", "effective_date_too_soon", "not_signed", "not_approved", "lapsed", "executed", "not_approver", "subject_changed", "unknown"],
+      "admin.tax.state": ["draft", "signed", "pending", "published", "unreviewed"],
+      "admin.ruleset.col": ["cgst_bp", "sgst_bp", "igst_bp"],
+      "admin.ruleset.channel": ["dine_in", "takeaway", "counter", "eco"],
+      "admin.ruleset.doc": ["tax_invoice", "bill_of_supply", "plain_bill"],
+      "admin.lists.tab": ["overdue", "toraise", "noref", "pilots", "retired", "overlimit"],
+      "admin.signin.status": ["requested", "approved", "delivered", "expired"],
+      "admin.lifecycle": ["suspend", "reinstate", "close"],
+      "admin.adjust.submit": ["reverse", "waive", "cancel"],
+      "admin.adjust.done": ["reverse", "waive", "cancel"],
+      "admin.lifecycle.submit": ["suspend", "reinstate", "close"],
     };
     const unresolved: string[] = [];
     for (const [family, values] of Object.entries(families)) {
