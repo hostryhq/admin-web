@@ -1,0 +1,759 @@
+{
+  "csrf": "csrf_example_token",
+  "org": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+  "device": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+  "operations": {
+    "signIn": {
+      "method": "POST",
+      "template": "/v1/sessions",
+      "status": 201,
+      "body": {
+        "absolute_expires_at": "2026-11-25T01:05:11.120Z",
+        "csrf_token": "csrf_example_token",
+        "idle_expires_at": "2026-11-24T13:10:11.120Z",
+        "idle_timeout_seconds": 1800,
+        "user": {
+          "display_name": "Priya",
+          "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+          "permissions": [
+            "admin.org.read",
+            "admin.device.read",
+            "admin.device.revoke",
+            "admin.support.session.start",
+            "admin.audit.read_own",
+            "admin.approval.create",
+            "admin.approval.read",
+            "admin.approval.decide"
+          ],
+          "role": "support"
+        }
+      }
+    },
+    "beginAccountSetup": {
+      "method": "POST",
+      "template": "/v1/account-setups",
+      "status": 201,
+      "body": {
+        "email": "staff@example.invalid",
+        "expires_at": "2026-11-24T13:10:11.120Z",
+        "totp_provisioning_uri": "otpauth://totp/Hostry:staff@example.invalid?secret=EXAMPLEEXAMPLE234&issuer=Hostry"
+      }
+    },
+    "completeAccountSetup": {
+      "method": "POST",
+      "template": "/v1/account-setup-completions",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "display_name": "Priya",
+        "email": "staff@example.invalid",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+        "role": "support",
+        "status": "active",
+        "totp_enrolled": true
+      }
+    },
+    "signOut": {
+      "method": "DELETE",
+      "template": "/v1/sessions/current",
+      "status": 204,
+      "body": null
+    },
+    "getSession": {
+      "method": "GET",
+      "template": "/v1/sessions/current",
+      "status": 200,
+      "body": {
+        "absolute_expires_at": "2026-11-25T01:05:11.120Z",
+        "csrf_token": "csrf_example_token",
+        "idle_expires_at": "2026-11-24T13:10:11.120Z",
+        "idle_timeout_seconds": 1800,
+        "user": {
+          "display_name": "Priya",
+          "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+          "permissions": [
+            "admin.org.read",
+            "admin.device.read",
+            "admin.device.revoke",
+            "admin.support.session.start",
+            "admin.audit.read_own",
+            "admin.approval.create",
+            "admin.approval.read",
+            "admin.approval.decide"
+          ],
+          "role": "support"
+        }
+      }
+    },
+    "listVendorUsers": {
+      "method": "GET",
+      "template": "/v1/vendor-users",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "display_name": "Priya",
+            "email": "staff@example.invalid",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+            "role": "support",
+            "status": "active",
+            "totp_enrolled": true
+          },
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "display_name": "Arun",
+            "email": "admin@example.invalid",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a78",
+            "role": "platform_admin",
+            "status": "active",
+            "totp_enrolled": true
+          }
+        ]
+      }
+    },
+    "listOrganisations": {
+      "method": "GET",
+      "template": "/v1/organisations",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+            "name": "Example Hospitality",
+            "outlet_count": 1,
+            "owner_status": "pending",
+            "status": "trial"
+          }
+        ],
+        "owner_status_available": true
+      }
+    },
+    "getOrganisation": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}",
+      "status": 200,
+      "body": {
+        "brands": [
+          {
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6a",
+            "is_default": true,
+            "name": "Example Hospitality"
+          }
+        ],
+        "onboarding_state": "complete",
+        "organisation": {
+          "created_at": "2026-11-24T13:05:11.120Z",
+          "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+          "name": "Example Hospitality",
+          "outlet_count": 1,
+          "status": "trial"
+        },
+        "outlets": [
+          {
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a61",
+            "kind": "restaurant",
+            "name": "Main Restaurant",
+            "state_code": "33",
+            "status": "active"
+          }
+        ],
+        "owner_invitations": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "expires_at": "2026-12-08T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a67",
+            "mobile_masked": "+91*******210",
+            "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+            "owner_name": "Asha",
+            "status": "pending"
+          }
+        ],
+        "owner_status": "pending",
+        "registrations": [
+          {
+            "gstin": "33ABCDE1234F1Z7",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b",
+            "legal_name": "Example Hospitality Pvt Ltd",
+            "regime": "regular",
+            "state_code": "33",
+            "status": "open",
+            "verification_state": "unverified"
+          }
+        ]
+      }
+    },
+    "listOrganisationDevices": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/devices",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "billing_capable": true,
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+            "key_protection": "hardware",
+            "kind": "pos",
+            "last_contact_at": "2026-11-24T13:10:11.120Z",
+            "outlet_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a61",
+            "registered_at": "2026-11-24T13:05:11.120Z",
+            "state": "active"
+          }
+        ]
+      }
+    },
+    "listAuditEntries": {
+      "method": "GET",
+      "template": "/v1/audit-entries",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "action": "vendor.device.revoked",
+            "actor_vendor_user_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a8a",
+            "occurred_at": "2026-11-24T13:15:11.120Z",
+            "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+            "request_id": "req_0190a1b2c3d4",
+            "result": "succeeded",
+            "source_address": "203.0.113.7",
+            "target_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+            "ticket_reference": "SUP-2041"
+          }
+        ]
+      }
+    },
+    "getSupportOrganisation": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/support-view/profile",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "name": "Example Hospitality",
+        "status": "trial"
+      }
+    },
+    "listSupportBrands": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/support-view/brands",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6a",
+            "is_default": true,
+            "name": "Example Hospitality"
+          }
+        ]
+      }
+    },
+    "listSupportOutlets": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/support-view/outlets",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "brand_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6a",
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a61",
+            "kind": "restaurant",
+            "name": "Main Restaurant",
+            "state_code": "33",
+            "status": "active",
+            "tax_registration_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b",
+            "timezone": "Asia/Kolkata"
+          }
+        ]
+      }
+    },
+    "listSupportTaxRegistrations": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/support-view/tax-registrations",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "gstin": "33ABCDE1234F1Z7",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b",
+            "legal_name": "Example Hospitality Pvt Ltd",
+            "regime": "regular",
+            "state_code": "33",
+            "status": "open",
+            "verification": {
+              "method": "certificate_seen",
+              "state": "verified",
+              "verified_at": "2026-11-24T13:10:11.120Z"
+            }
+          }
+        ]
+      }
+    },
+    "listSupportDocumentSeries": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/support-view/document-series",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "code": "A7K",
+            "device_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+            "doc_type": "tax_invoice",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6c",
+            "issued_at": "2026-11-24T13:15:11.120Z",
+            "outlet_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a61",
+            "status": "active",
+            "tax_registration_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b"
+          },
+          {
+            "code": "A7M",
+            "device_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+            "doc_type": "credit_note",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a95",
+            "issued_at": "2026-11-24T13:15:11.120Z",
+            "outlet_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a61",
+            "status": "active",
+            "tax_registration_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b"
+          }
+        ]
+      }
+    },
+    "getSupportSettings": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/support-view/settings",
+      "status": 200,
+      "body": {
+        "idle_lock_minutes": 5,
+        "offline_window_days": 7,
+        "updated_at": "2026-11-24T13:05:11.120Z"
+      }
+    },
+    "listSupportMembers": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/support-view/members",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "display_name": "Asha",
+            "has_pin": true,
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a64",
+            "mobile_masked": "+91*******210",
+            "role_assignments": [
+              {
+                "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6f",
+                "role_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a9a"
+              },
+              {
+                "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a8b",
+                "role_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a65"
+              }
+            ],
+            "status": "active"
+          },
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "display_name": "Ravi",
+            "has_pin": false,
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a9e",
+            "mobile_masked": "+91*******211",
+            "role_assignments": [
+              {
+                "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a9f",
+                "role_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a65"
+              }
+            ],
+            "status": "active"
+          }
+        ]
+      }
+    },
+    "listSupportRoles": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/support-view/roles",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "built_in": true,
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a9a",
+            "name": "Owner",
+            "permissions": [
+              "organisation.read",
+              "organisation.manage",
+              "brand.read",
+              "brand.manage",
+              "outlet.read",
+              "outlet.create",
+              "outlet.manage",
+              "tax_registration.read",
+              "tax_registration.manage",
+              "settings.read",
+              "settings.manage",
+              "series.read",
+              "series.close_unreconciled",
+              "link.read",
+              "link.manage",
+              "link.revoke",
+              "device.read",
+              "device.register",
+              "device.activation_code.create",
+              "device.revoke",
+              "member.read",
+              "member.manage",
+              "member.pin.authorise",
+              "member.role.assign",
+              "member.owner.assign",
+              "role.read",
+              "role.manage",
+              "audit.read",
+              "support.code.create"
+            ],
+            "updated_at": "2026-11-24T13:05:11.120Z"
+          },
+          {
+            "built_in": false,
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a65",
+            "name": "Cashier",
+            "permissions": [
+              "outlet.read",
+              "device.read"
+            ],
+            "updated_at": "2026-11-24T13:05:11.120Z"
+          },
+          {
+            "built_in": false,
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a9b",
+            "name": "Waiter",
+            "permissions": [
+              "outlet.read"
+            ],
+            "updated_at": "2026-11-24T13:05:11.120Z"
+          }
+        ]
+      }
+    },
+    "listSupportDevices": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/support-view/devices",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "billing_capability": "active",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+            "key_protection": "hardware",
+            "kind": "pos",
+            "last_contact_at": "2026-11-24T13:10:11.120Z",
+            "name": "Counter 1",
+            "outlet_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a61",
+            "registered_at": "2026-11-24T13:05:11.120Z",
+            "state": "active"
+          }
+        ]
+      }
+    },
+    "listVendorApprovals": {
+      "method": "GET",
+      "template": "/v1/approvals",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "expires_at": "2026-11-25T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6d",
+            "kind": "device_revoke_over_quota",
+            "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+            "requested_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+            "state": "pending",
+            "subject_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+            "ticket_reference": "SUP-2041",
+            "verification_method": "callback_to_registered_number"
+          }
+        ]
+      }
+    },
+    "fileVendorApproval": {
+      "method": "POST",
+      "template": "/v1/approvals",
+      "status": 201,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "expires_at": "2026-11-25T13:05:11.120Z",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6d",
+        "kind": "device_revoke_over_quota",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "requested_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+        "state": "pending",
+        "subject_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+        "ticket_reference": "SUP-2041",
+        "verification_method": "callback_to_registered_number"
+      }
+    },
+    "approveVendorApproval": {
+      "method": "PUT",
+      "template": "/v1/approvals/{approval_id}/decision",
+      "status": 200,
+      "body": {
+        "approval": {
+          "approved_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a78",
+          "created_at": "2026-11-24T13:05:11.120Z",
+          "expires_at": "2026-11-25T13:05:11.120Z",
+          "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6d",
+          "kind": "device_revoke_over_quota",
+          "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+          "requested_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+          "state": "approved",
+          "subject_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+          "ticket_reference": "SUP-2041",
+          "verification_method": "callback_to_registered_number"
+        }
+      }
+    },
+    "cancelVendorApproval": {
+      "method": "PUT",
+      "template": "/v1/approvals/{approval_id}/cancellation",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "expires_at": "2026-11-25T13:05:11.120Z",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6d",
+        "kind": "device_revoke_over_quota",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "requested_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+        "state": "cancelled",
+        "subject_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+        "ticket_reference": "SUP-2041",
+        "verification_method": "callback_to_registered_number"
+      }
+    },
+    "getSupportSession": {
+      "method": "GET",
+      "template": "/v1/support-sessions/current",
+      "status": 200,
+      "body": {
+        "seconds_remaining": 1795,
+        "session": {
+          "ends_at": "2026-11-24T13:35:11.120Z",
+          "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a68",
+          "mode": "view",
+          "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+          "started_at": "2026-11-24T13:05:11.120Z",
+          "status": "active",
+          "ticket_reference": "SUP-2041",
+          "vendor_user_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66"
+        }
+      }
+    },
+    "createOrganisation": {
+      "method": "POST",
+      "template": "/v1/organisations",
+      "status": 201,
+      "body": {
+        "created": {
+          "brand": {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6a",
+            "is_default": true,
+            "name": "Example Hospitality"
+          },
+          "organisation": {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+            "name": "Example Hospitality",
+            "status": "trial",
+            "updated_at": "2026-11-24T13:05:11.120Z"
+          },
+          "outlet": {
+            "brand_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6a",
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a61",
+            "kind": "restaurant",
+            "name": "Main Restaurant",
+            "state_code": "33",
+            "status": "active",
+            "tax_registration_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b",
+            "timezone": "Asia/Kolkata"
+          },
+          "tax_registration": {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "gstin": "33ABCDE1234F1Z7",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b",
+            "legal_name": "Example Hospitality Pvt Ltd",
+            "regime": "regular",
+            "state_code": "33",
+            "status": "open",
+            "verification": {
+              "state": "unverified"
+            }
+          }
+        },
+        "owner_invitation": {
+          "created_at": "2026-11-24T13:05:11.120Z",
+          "expires_at": "2026-12-08T13:05:11.120Z",
+          "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a67",
+          "mobile_masked": "+91*******210",
+          "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+          "owner_name": "Asha",
+          "status": "pending"
+        },
+        "state": "complete"
+      }
+    },
+    "createOwnerInvitation": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/owner-invitations",
+      "status": 201,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "expires_at": "2026-12-08T13:05:11.120Z",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a67",
+        "mobile_masked": "+91*******210",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "owner_name": "Asha",
+        "status": "pending"
+      }
+    },
+    "renewOwnerInvitation": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/owner-invitations/{invitation_id}/renewals",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "expires_at": "2026-12-08T13:10:11.120Z",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a67",
+        "mobile_masked": "+91*******210",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "owner_name": "Asha",
+        "status": "pending"
+      }
+    },
+    "cancelOwnerInvitation": {
+      "method": "PUT",
+      "template": "/v1/organisations/{organisation_id}/owner-invitations/{invitation_id}/cancellation",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "expires_at": "2026-12-08T13:05:11.120Z",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a67",
+        "mobile_masked": "+91*******210",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "owner_name": "Asha",
+        "status": "cancelled"
+      }
+    },
+    "verifyTaxRegistration": {
+      "method": "PUT",
+      "template": "/v1/organisations/{organisation_id}/tax-registrations/{registration_id}/verification",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "gstin": "33ABCDE1234F1Z7",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b",
+        "legal_name": "Example Hospitality Pvt Ltd",
+        "regime": "regular",
+        "state_code": "33",
+        "status": "open",
+        "verification": {
+          "method": "certificate_seen",
+          "state": "verified",
+          "verified_at": "2026-11-24T13:10:11.120Z"
+        }
+      }
+    },
+    "revokeOrganisationDevice": {
+      "method": "PUT",
+      "template": "/v1/organisations/{organisation_id}/devices/{device_id}/revocation",
+      "status": 200,
+      "body": {
+        "changed": true,
+        "device": {
+          "billing_capable": true,
+          "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+          "key_protection": "hardware",
+          "kind": "pos",
+          "last_contact_at": "2026-11-24T13:10:11.120Z",
+          "outlet_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a61",
+          "registered_at": "2026-11-24T13:05:11.120Z",
+          "state": "revoked"
+        },
+        "outcome": "revoked"
+      }
+    },
+    "startSupportSession": {
+      "method": "POST",
+      "template": "/v1/support-sessions",
+      "status": 201,
+      "body": {
+        "seconds_remaining": 1800,
+        "session": {
+          "ends_at": "2026-11-24T13:35:11.120Z",
+          "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a68",
+          "mode": "view",
+          "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+          "started_at": "2026-11-24T13:05:11.120Z",
+          "status": "active",
+          "ticket_reference": "SUP-2041",
+          "vendor_user_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66"
+        }
+      }
+    },
+    "endSupportSession": {
+      "method": "DELETE",
+      "template": "/v1/support-sessions/current",
+      "status": 204,
+      "body": null
+    },
+    "createVendorUser": {
+      "method": "POST",
+      "template": "/v1/vendor-users",
+      "status": 201,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "display_name": "Karthik",
+        "email": "new.staff@example.invalid",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a88",
+        "role": "support",
+        "status": "setup_pending",
+        "totp_enrolled": false
+      }
+    },
+    "updateVendorUser": {
+      "method": "PATCH",
+      "template": "/v1/vendor-users/{vendor_user_id}",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "display_name": "Priya",
+        "email": "staff@example.invalid",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+        "role": "support",
+        "status": "deactivated",
+        "totp_enrolled": true
+      }
+    },
+    "resetVendorUserTotp": {
+      "method": "POST",
+      "template": "/v1/vendor-users/{vendor_user_id}/totp-resets",
+      "status": 201,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "display_name": "Priya",
+        "email": "staff@example.invalid",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+        "role": "support",
+        "status": "setup_pending",
+        "totp_enrolled": false
+      }
+    }
+  }
+}
