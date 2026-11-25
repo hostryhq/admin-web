@@ -45,3 +45,114 @@
   font-size: var(--hy-font-size-sm);
   background: var(--hy-color-surface);
 }
+
+/* Controls and layout added with the A0 screens. Colours and spacing stay on ui-kit tokens (--hy-*). */
+.hy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hy-space-2);
+  justify-content: flex-end;
+  align-items: center;
+}
+.hy-filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hy-space-3);
+  align-items: flex-end;
+  margin-bottom: var(--hy-space-2);
+}
+.hy-section {
+  border: var(--hy-border-width) solid var(--hy-color-border);
+  border-radius: var(--hy-radius-md);
+  padding: var(--hy-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--hy-space-3);
+}
+.hy-section legend {
+  font-weight: 600;
+  padding: 0 var(--hy-space-2);
+}
+.hy-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--hy-space-2);
+}
+.hy-radio {
+  display: flex;
+  align-items: center;
+  gap: var(--hy-space-2);
+  min-height: var(--hy-touch-target);
+}
+.hy-phone {
+  display: flex;
+  align-items: center;
+  gap: var(--hy-space-2);
+}
+.hy-phone__prefix {
+  font-family: var(--hy-font-family-mono);
+}
+.hy-dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--hy-space-2) var(--hy-space-4);
+  margin: 0;
+}
+.hy-dl dt {
+  color: var(--hy-color-text-muted);
+}
+.hy-dl dd {
+  margin: 0;
+}
+.hy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--hy-space-1);
+}
+.hy-registration {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hy-space-3);
+  align-items: center;
+}
+.hy-copyid {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hy-space-2);
+}
+.hy-devicestate {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--hy-space-1);
+}
+.hy-skeleton--line {
+  height: 1.25rem;
+}
+.hy-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+/* Support session banner: fixed above every screen while a session is open (screen 14). */
+.hy-supportbanner {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hy-space-3);
+  align-items: center;
+  padding: var(--hy-space-2) var(--hy-space-4);
+  background: var(--hy-color-warning-bg);
+  color: var(--hy-color-text);
+  border-bottom: var(--hy-border-width) solid var(--hy-color-warning);
+}

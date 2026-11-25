@@ -1,6 +1,7 @@
 import type { JSX } from "@solidjs/web";
 import { createRouter, useNavigate, type RouterHistory } from "@solidjs/router";
 import { HOME_PATH, ROUTES, type RouteMeta } from "./routes";
+import { Approvals } from "./screens/Approvals";
 import { AuditLog } from "./screens/AuditLog";
 import { CreateOrganisation } from "./screens/CreateOrganisation";
 import { CreationResult } from "./screens/CreationResult";
@@ -44,6 +45,7 @@ export function createAdminRouter(history?: RouterHistory) {
       { path: r.organisationDetail.path, component: OrganisationDetail, info: r.organisationDetail },
       { path: r.organisationDevices.path, component: OrganisationDevices, info: r.organisationDevices },
       { path: r.audit.path, component: AuditLog, info: r.audit },
+      { path: r.approvals.path, component: Approvals, info: r.approvals },
       { path: r.supportSession.path, component: SupportSessionView, info: r.supportSession },
       { path: r.supportSessionEnded.path, component: SupportSessionEnded, info: r.supportSessionEnded },
       { path: "*404", component: NotFound, info: NOT_FOUND },

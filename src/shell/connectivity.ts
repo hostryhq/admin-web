@@ -1,4 +1,4 @@
-import { createSignal, onSettled } from "solid-js";
+import { createContext, createSignal, onSettled, useContext } from "solid-js";
 import type { OfflineReason } from "@hostry/ui-kit";
 
 export type ConnectivityOptions = {
@@ -69,3 +69,12 @@ export function createConnectivity(options: ConnectivityOptions = {}) {
 }
 
 export type Connectivity = ReturnType<typeof createConnectivity>;
+
+export const ConnectivityContext = createContext<Connectivity>();
+
+const ONLINE: Pick<Connectivity, "reason" | "writesDisabled"> = { reason: () => undefined, writesDisabled: () => false };
+
+/** Connectivity for screens: write controls are disabled while offline or unreachable (nothing is queued). */
+export function useConnectivity(): Pick<Connectivity, "reason" | "writesDisabled"> {
+  return useContext(ConnectivityContext) ?? ONLINE;
+}

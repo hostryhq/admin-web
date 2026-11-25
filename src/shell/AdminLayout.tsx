@@ -1,4 +1,4 @@
-import { createContext, createEffect, createMemo, createSignal, For, onSettled, Show, useContext } from "solid-js";
+import { createEffect, createMemo, createSignal, For, onSettled, Show, useContext } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { useLocation, useNavigate, useRouteMatches } from "@solidjs/router";
 import {
@@ -8,18 +8,20 @@ import {
   NavBar,
   OfflineBanner,
   ToastRegion,
-  toasts,
   useI18n,
   type NavItem,
 } from "@hostry/ui-kit";
 import { NAV, ROUTES, type RouteMeta } from "../routes";
 import { Forbidden } from "../screens/Forbidden";
 import { hasPermission, SessionContext } from "../session/session";
-import { createConnectivity, type Connectivity } from "./connectivity";
+import { useApi } from "../api/context";
+import { mut } from "../api/headers";
+import { outcome } from "../api/outcome";
+import { ConnectivityContext } from "./connectivity";
+import { SupportBanner } from "./SupportBanner";
+import { useSupportActions } from "./support";
 import { createIdleTimer } from "./idle";
 import { createShortcutHandler, SHORTCUTS } from "./shortcuts";
-
-export const ConnectivityContext = createContext<Connectivity>();
 
 /**
  * Root layout (the router's render-prop child). Owns everything that is on every screen:
@@ -39,22 +41,25 @@ export function AdminLayout(props: { children?: JSX.Element }): JSX.Element {
   const session = () => state.session();
   const can = (need: string | readonly string[] | undefined) => hasPermission(session(), need);
 
-  const connectivity = createConnectivity({ onBackOnline: () => toasts.show(t("admin.offline.back")) });
+  const api = useApi();
+  const connectivity = useContext(ConnectivityContext);
+  const supportActions = useSupportActions();
 
   const idle = createIdleTimer({
     enabled: () => session() !== undefined && !isPublic(),
+    // "Stay signed in" touches the server session so its own idle clock restarts.
+    onStay: () => void outcome(api.GET("/v1/sessions/current")),
     absoluteAt: () => {
       const at = session()?.expiresAt;
       return at ? Date.parse(at) : undefined;
     },
     onExpire: (reason) => {
-      state.setSession(undefined);
-      navigate(`${ROUTES.sessionEnded.path}?reason=${reason}`, { replace: true });
+      state.expire(reason);
     },
   });
   // A new session starts a fresh idle clock.
   createEffect(
-    () => session(),
+    () => session() !== undefined,
     () => idle.reset(),
   );
 
@@ -62,7 +67,10 @@ export function AdminLayout(props: { children?: JSX.Element }): JSX.Element {
   createEffect(
     () => ({ authed: session() !== undefined, pub: isPublic() }),
     ({ authed, pub }) => {
-      if (!authed && !pub) navigate(ROUTES.signin.path, { replace: true });
+      if (authed || pub) return;
+      const reason = state.endReason();
+      state.clearEndReason();
+      navigate(reason ? `${ROUTES.sessionEnded.path}?reason=${reason}` : ROUTES.signin.path, { replace: true });
     },
   );
 
@@ -92,8 +100,8 @@ export function AdminLayout(props: { children?: JSX.Element }): JSX.Element {
     },
     openHelp: () => setHelpOpen(true),
     dialogOpen: () => document.querySelector("[role='dialog']") !== null,
-    supportSessionActive: () => false, // wired with the support session in the next wave
-    endSupportSession: () => undefined,
+    supportSessionActive: () => session()?.support !== undefined,
+    endSupportSession: () => void supportActions.end(),
   });
   onSettled(() => {
     window.addEventListener("keydown", shortcut);
@@ -107,7 +115,9 @@ export function AdminLayout(props: { children?: JSX.Element }): JSX.Element {
       href: n.path,
     }));
 
-  const signOut = () => {
+  const signOut = async () => {
+    // The server ends the session and clears the cookie; the page is signed out either way.
+    await outcome(api.DELETE("/v1/sessions/current", { params: { header: mut() } }));
     state.setSession(undefined);
     navigate(ROUTES.signin.path, { replace: true });
   };
@@ -135,10 +145,17 @@ export function AdminLayout(props: { children?: JSX.Element }): JSX.Element {
   );
 
   return (
-    <ConnectivityContext value={connectivity}>
+    <>
       <AppShell
         {...(isPublic() ? {} : { header: header() })}
-        banners={<OfflineBanner reason={connectivity.reason()} />}
+        banners={
+          <>
+            <OfflineBanner reason={connectivity?.reason()} />
+            <Show when={session() !== undefined && !isPublic()}>
+              <SupportBanner />
+            </Show>
+          </>
+        }
       >
         <Show when={isPublic() || session() !== undefined}>
           <Show when={isPublic() || can(meta()?.permission)} fallback={<Forbidden />}>
@@ -171,6 +188,6 @@ export function AdminLayout(props: { children?: JSX.Element }): JSX.Element {
         </ul>
       </Dialog>
       <ToastRegion />
-    </ConnectivityContext>
+    </>
   );
 }

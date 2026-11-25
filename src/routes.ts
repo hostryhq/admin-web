@@ -1,7 +1,7 @@
 /**
  * Route table for the A0 screens, numbered as in docs/design/admin-a0-flows.md section 3.
  * Dialogs have no route: screen 9 (invitation resend/extend, cancel, re-issue), 11 (revoke device)
- * and 13 (start support session) open over screens 6, 10 and 6.
+ * and 13 (start support session) open over screens 6, 10 and 6. Screen 16 is the approvals queue (A0-S19).
  *
  * `permission` is a string or a list meaning "any of". A route without one needs sign-in only.
  * Controls and nav items the user may not use are absent, and a direct URL shows the forbidden page
@@ -18,7 +18,7 @@ export type RouteMeta = {
   /** Reachable without a session (sign-in, setup, session ended). */
   public?: boolean;
   /** Which top-nav item is current on this route. */
-  navId?: "orgs" | "audit" | "staff";
+  navId?: "orgs" | "audit" | "approvals" | "staff";
 };
 
 export const ROUTES = {
@@ -87,6 +87,14 @@ export const ROUTES = {
     permission: ["admin.audit.read", "admin.audit.read_own"],
     navId: "audit",
   },
+  approvals: {
+    id: "approvals",
+    screen: 16,
+    path: "/approvals",
+    titleKey: "admin.approvals.title",
+    permission: "admin.device.revoke",
+    navId: "approvals",
+  },
   supportSession: {
     id: "supportSession",
     screen: 14,
@@ -111,7 +119,7 @@ export type RouteId = keyof typeof ROUTES;
 export const HOME_PATH = ROUTES.organisations.path;
 
 export type NavEntry = {
-  id: "orgs" | "audit" | "staff";
+  id: "orgs" | "audit" | "approvals" | "staff";
   path: string;
   labelKey: string;
   permission: string | readonly string[];
@@ -121,5 +129,6 @@ export type NavEntry = {
 export const NAV: readonly NavEntry[] = [
   { id: "orgs", path: ROUTES.organisations.path, labelKey: "admin.orgs.title", permission: "admin.org.read" },
   { id: "audit", path: ROUTES.audit.path, labelKey: "admin.audit.title", permission: ROUTES.audit.permission },
+  { id: "approvals", path: ROUTES.approvals.path, labelKey: "admin.approvals.title", permission: "admin.device.revoke" },
   { id: "staff", path: ROUTES.staff.path, labelKey: "admin.staff.title", permission: "admin.user.manage" },
 ];

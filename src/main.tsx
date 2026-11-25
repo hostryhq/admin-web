@@ -5,7 +5,7 @@ import "./app.css";
 import { App } from "./App";
 import { createAppTranslator } from "./i18n";
 import { createAdminRouter } from "./router";
-import { createSessionState, devSession } from "./session/session";
+import { createSessionState } from "./session/session";
 
 // Vendor admin: desktop density, light theme (dark follows the OS), English only in A0.
 applyDensity("desktop");
@@ -15,7 +15,5 @@ applyLang("en");
 const root = document.getElementById("root");
 if (!root) throw new Error("missing #root");
 
-render(
-  () => <App router={createAdminRouter()} session={createSessionState(devSession())} translator={createAppTranslator()} />,
-  root,
-);
+// No session is created here: App asks the admin backend (same-origin cookie) whether one exists.
+render(() => <App router={createAdminRouter()} session={createSessionState()} translator={createAppTranslator()} />, root);
