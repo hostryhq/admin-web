@@ -21,16 +21,14 @@ const METHODS: Method[] = ["callback_to_registered_number", "owner_request_in_ap
  * (AC 38). Enter in a field does not submit; Ctrl+Enter does. Over the quota the server answers
  * `vendor_approval_required` (AC 86, 87): the device stays active, the same request is filed as a
  * two-person approval (`fileVendorApproval`, as the contract describes) and the dialog says a second
- * Hostry person must approve it. Once approved, the requester repeats the revoke with the
- * `approval_id` (`approvalId` below, found by the devices screen).
+ * Hostry person must approve it. The revoke completes at that approval (P2C-1): identity revokes the
+ * device in the same transaction, so nothing is repeated by the requester afterwards.
  */
 export function RevokeDialog(props: {
   open: boolean;
   organisationId: string;
   device: Device;
   outletName: string;
-  /** An approved two-person approval of this user for this device: sent with the revoke. */
-  approvalId?: string | undefined;
   onClose: () => void;
   onDone: () => void;
 }): JSX.Element {
@@ -46,7 +44,6 @@ function RevokeForm(props: {
   organisationId: string;
   device: Device;
   outletName: string;
-  approvalId?: string | undefined;
   onClose: () => void;
   onDone: () => void;
 }): JSX.Element {
@@ -81,7 +78,6 @@ function RevokeForm(props: {
           verification_method: method(),
           ...(method() === "other" ? { verification_note: note().trim() } : {}),
           confirm: true,
-          ...(props.approvalId ? { approval_id: props.approvalId } : {}),
         },
       }),
     );
@@ -136,11 +132,6 @@ function RevokeForm(props: {
           {t(`admin.devices.kind.${props.device.kind}`)} - {props.outletName} - {t("admin.revoke.registered", { date: ist(props.device.registered_at, false) })}
         </p>
         <p class="hy-hint">{t("admin.revoke.warn")}</p>
-        <Show when={props.approvalId}>
-          <InlineAlert kind="info" data-testid="revoke-approved">
-            {t("admin.revoke.approved.note")}
-          </InlineAlert>
-        </Show>
         <Input
           name="ticket"
           required

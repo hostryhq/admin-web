@@ -10,6 +10,8 @@ export type Failure = {
   status: number;
   /** Problem `code` (RFC 9457 extension), e.g. `gstin_in_use`, `vendor_approval_required`. */
   code?: string;
+  /** Problem `reason` (for example why `approval_not_executable`). */
+  reason?: string;
   errors?: FieldError[];
   /** Network error: no answer at all. */
   network?: boolean;
@@ -19,11 +21,12 @@ export type Outcome<T> = { ok: true; status: number; data: T } | { ok: false; fa
 
 type Settled<D> = { data?: D; error?: unknown; response: Response };
 
-function problem(error: unknown): { code?: string; errors?: FieldError[] } {
+function problem(error: unknown): { code?: string; reason?: string; errors?: FieldError[] } {
   if (typeof error !== "object" || error === null) return {};
-  const e = error as { code?: unknown; errors?: unknown };
+  const e = error as { code?: unknown; reason?: unknown; errors?: unknown };
   return {
     ...(typeof e.code === "string" ? { code: e.code } : {}),
+    ...(typeof e.reason === "string" ? { reason: e.reason } : {}),
     ...(Array.isArray(e.errors) ? { errors: e.errors as FieldError[] } : {}),
   };
 }

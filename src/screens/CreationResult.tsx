@@ -119,7 +119,10 @@ export function CreationResult(): JSX.Element {
                     {t("admin.invite.nosms")}
                   </p>
                   <div class="hy-actions">
-                    <Button variant="primary" data-autofocus data-testid="result-open" onClick={open}>
+                    <a class="hy-btn hy-btn--primary hy-linkbutton" href={`/organisations/${s().id}/onboarding/gstin`} data-testid="result-continue">
+                      {t("admin.wizard.continue")}
+                    </a>
+                    <Button data-autofocus data-testid="result-open" onClick={open}>
                       {t("admin.create.open")}
                     </Button>
                     <Button data-testid="result-another" onClick={another}>

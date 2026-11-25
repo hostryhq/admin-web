@@ -75,7 +75,8 @@ export type AnyQuery = {
 type Page<I> = { items: I[]; next_cursor?: string | undefined };
 
 /** First page through `createQuery`, further pages appended by `more()`. A new key or reload starts over. */
-export function createPaged<K, I>(key: () => K | undefined, fetchPage: (k: K, cursor?: string) => Promise<Outcome<Page<I>>>) {
+export function createPaged<K, P extends Page<unknown>>(key: () => K | undefined, fetchPage: (k: K, cursor?: string) => Promise<Outcome<P>>) {
+  type I = P["items"][number];
   const first = createQuery(key, (k) => fetchPage(k));
   const [extra, setExtra] = createSignal<I[]>([]);
   const [cursor, setCursor] = createSignal<string | undefined>();

@@ -21,8 +21,11 @@ jobs:
       package-manager: pnpm # or npm, per client-app-standard
       # ui-kit and client-core are `link:` dependencies (sibling folders): the workflow checks them
       # out next to this repo and builds them before install. Switch to @main once phase1-ci is merged.
+      # Pinned refs (the Phase 2 admin screens need the Phase 2 ui-kit components: WizardStepper,
+      # MoneyField, AmountBreakdown, RuleGrid, BasisPointField, InvoiceRefField, OneTimeReveal, DiffList);
+      # client-core has no ref here, so the workflow uses this branch's name if it exists, else main.
       sibling-repos: |
-        ui-kit
+        ui-kit@feat/phase2-components
         client-core
 
   gitleaks:

@@ -10,10 +10,11 @@ import { CopyId, Empty, ErrorState, SkeletonBlock, StaleTag } from "../component
 import { OrgStatusBadge } from "../components/badges";
 import { ROUTES } from "../routes";
 import { hasPermission, SessionContext } from "../session/session";
+import { allowedActions, LifecycleDialog } from "./a1/LifecycleDialog";
 import { StartSupportDialog } from "./StartSupportDialog";
 
 export type OrganisationView = components["schemas"]["OrganisationDetailView"];
-export type OrgTab = "overview" | "devices";
+export type OrgTab = "overview" | "onboarding" | "subscription" | "charges" | "devices";
 
 /**
  * Shared page frame for one organisation (screens 6 and 10): heading, status, copyable id, the
@@ -32,6 +33,7 @@ export function OrganisationFrame(props: {
   const state = useContext(SessionContext);
   const can = (p: string) => hasPermission(state.session(), p);
   const [startOpen, setStartOpen] = createSignal(false);
+  const [lifecycleOpen, setLifecycleOpen] = createSignal(false);
 
   const q = createQuery(
     () => params.orgId,
@@ -40,12 +42,23 @@ export function OrganisationFrame(props: {
 
   const tabs = () => [
     { id: "overview", label: t("admin.orgs.tab.overview"), "data-testid": "org-tab-overview" },
+    { id: "onboarding", label: t("admin.orgs.tab.onboarding"), "data-testid": "org-tab-onboarding" },
+    ...(can("admin.subscription.read")
+      ? [
+          { id: "subscription", label: t("admin.orgs.tab.subscription"), "data-testid": "org-tab-subscription" },
+          { id: "charges", label: t("admin.orgs.tab.charges"), "data-testid": "org-tab-charges" },
+        ]
+      : []),
     ...(can("admin.device.read") ? [{ id: "devices", label: t("admin.orgs.tab.devices"), "data-testid": "org-tab-devices" }] : []),
   ];
-  const select = (id: string) =>
-    navigate(
-      (id === "devices" ? ROUTES.organisationDevices.path : ROUTES.organisationDetail.path).replace(":orgId", params.orgId),
-    );
+  const TAB_ROUTE = {
+    overview: ROUTES.organisationDetail,
+    onboarding: ROUTES.checklist,
+    subscription: ROUTES.subscription,
+    charges: ROUTES.charges,
+    devices: ROUTES.organisationDevices,
+  } as const;
+  const select = (id: string) => navigate(TAB_ROUTE[id as OrgTab].path.replace(":orgId", params.orgId));
 
   const backLink = () => (
     <a href={ROUTES.organisations.path} data-testid="org-back">
@@ -88,6 +101,16 @@ export function OrganisationFrame(props: {
                       {t("admin.support.start.title")}
                     </Button>
                   </Show>
+                  <Show when={can("admin.support.session.act")}>
+                    <a class="hy-btn hy-linkbutton" href={ROUTES.menuLoading.path.replace(":orgId", params.orgId)} data-testid="org-menu-loading">
+                      {t("admin.act.link")}
+                    </a>
+                  </Show>
+                  <Show when={can("admin.org.lifecycle.request") && allowedActions(view().organisation.status).length > 0}>
+                    <Button data-testid="org-lifecycle" onClick={() => setLifecycleOpen(true)}>
+                      {t("admin.lifecycle.menu")}
+                    </Button>
+                  </Show>
                 </>
               }
             />
@@ -95,6 +118,19 @@ export function OrganisationFrame(props: {
             <Tabs label={t("admin.orgs.tabs.label")} tabs={tabs()} selected={props.tab} onSelect={select} altShortcuts>
               {props.children(view, q.reload)}
             </Tabs>
+            <Show when={lifecycleOpen()}>
+              <LifecycleDialog
+                open
+                organisationId={view().organisation.id}
+                organisationName={view().organisation.name}
+                status={view().organisation.status}
+                onClose={() => setLifecycleOpen(false)}
+                onDone={() => {
+                  setLifecycleOpen(false);
+                  q.reload();
+                }}
+              />
+            </Show>
             <StartSupportDialog
               open={startOpen()}
               onClose={() => setStartOpen(false)}

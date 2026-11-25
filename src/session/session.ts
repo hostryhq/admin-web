@@ -9,6 +9,8 @@ import { createContext, createSignal } from "solid-js";
 export type AdminSession = {
   /** Display name for the user menu. */
   name: string;
+  /** RFC 3339 UTC: the account may approve from this moment (seven days after creation, ADR-0005 A2.3). */
+  canApproveFrom?: string;
   /** Permission strings such as `admin.org.read`. Checks are on permissions, never role names. */
   permissions: readonly string[];
   /** RFC 3339 UTC. Absolute session limit (12 h); the idle limit is tracked separately. */

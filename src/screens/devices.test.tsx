@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fireEvent, screen } from "@solidjs/testing-library";
 import { problem, recorded } from "../test/mockAdmin";
 import { device } from "../test/data";
-import { byId, click, findById, mount, queryById, sessionOf, type, until, USER_ID } from "../test/harness";
+import { byId, click, findById, mount, queryById, sessionOf, type, until } from "../test/harness";
 
 const DEVICES = "/organisations/0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60/devices";
 const LIST = "GET /v1/organisations/{organisation_id}/devices";
@@ -146,22 +146,15 @@ describe("revoke dialog (screen 11)", () => {
     expect(queryById("revoke-approval")).toBeNull();
   });
 
-  it("once a second person approved it, repeating the revoke carries the approval id", async () => {
-    const m = mount(DEVICES, { session: sessionOf(SUPPORT) });
-    m.mock.on(LIST, { status: 200, body: everyState() });
-    m.mock.on("GET /v1/approvals", (r) =>
-      r.query.get("state") === "approved"
-        ? { status: 200, body: { items: [{ ...recorded<{ items: object[] }>("listVendorApprovals").items[0], id: "ap-9", state: "approved", subject_id: "d-active", requested_by: USER_ID }] } }
-        : { status: 200, body: { items: [] } },
-    );
-    await findById("device-revoke-d-active");
-    await until(() => expect(m.mock.callsOf("GET /v1/approvals").length).toBeGreaterThan(0));
-    click("device-revoke-d-active");
-    expect((await findById("revoke-approved")).textContent).toContain("A second person approved this");
+  it("the revoke completes at approval (P2C-1): the dialog says so, and the requester never repeats it with an approval id", async () => {
+    const { mock } = await open();
+    mock.on(REVOKE, problem(409, "vendor_approval_required"));
     valid();
     click("revoke-submit");
-    await until(() => expect(m.mock.callsOf(REVOKE)).toHaveLength(1));
-    expect(m.mock.callsOf(REVOKE)[0]?.body).toMatchObject({ approval_id: "ap-9", confirm: true });
+    expect((await findById("revoke-approval")).textContent).toContain("revoked the moment they approve");
+    // The devices screen no longer looks up approved approvals, and no revoke carries an approval id.
+    expect(mock.callsOf("GET /v1/approvals")).toHaveLength(0);
+    expect(mock.callsOf(REVOKE).every((c) => !("approval_id" in (c.body as object)))).toBe(true);
   });
 
   it("a device of another organisation (404) says not found", async () => {
