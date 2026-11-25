@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "vite",
     "lint": "eslint .",
+    "gen:api": "node scripts/sync-api-types.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "vite build",
