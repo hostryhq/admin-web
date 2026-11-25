@@ -16,9 +16,14 @@ permissions:
 
 jobs:
   ts:
-    uses: hostryhq/.github/.github/workflows/ts-ci.yml@main
+    uses: hostryhq/.github/.github/workflows/ts-ci.yml@feat/phase1-ci
     with:
       package-manager: pnpm # or npm, per client-app-standard
+      # ui-kit and client-core are `link:` dependencies (sibling folders): the workflow checks them
+      # out next to this repo and builds them before install. Switch to @main once phase1-ci is merged.
+      sibling-repos: |
+        ui-kit
+        client-core
 
   gitleaks:
     uses: hostryhq/.github/.github/workflows/gitleaks.yml@main
