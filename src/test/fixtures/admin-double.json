@@ -184,6 +184,24 @@
         ]
       }
     },
+    "listOwnerInvitations": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/owner-invitations",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "expires_at": "2026-12-08T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a67",
+            "mobile_masked": "+91*******210",
+            "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+            "owner_name": "Asha",
+            "status": "pending"
+          }
+        ]
+      }
+    },
     "listOrganisationDevices": {
       "method": "GET",
       "template": "/v1/organisations/{organisation_id}/devices",
@@ -201,6 +219,21 @@
             "state": "active"
           }
         ]
+      }
+    },
+    "getOrganisationDevice": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/devices/{device_id}",
+      "status": 200,
+      "body": {
+        "billing_capable": true,
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+        "key_protection": "hardware",
+        "kind": "pos",
+        "last_contact_at": "2026-11-24T13:10:11.120Z",
+        "outlet_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a61",
+        "registered_at": "2026-11-24T13:05:11.120Z",
+        "state": "active"
       }
     },
     "listAuditEntries": {
@@ -482,6 +515,23 @@
         ]
       }
     },
+    "getVendorApproval": {
+      "method": "GET",
+      "template": "/v1/approvals/{approval_id}",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "expires_at": "2026-11-25T13:05:11.120Z",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6d",
+        "kind": "device_revoke_over_quota",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "requested_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a66",
+        "state": "pending",
+        "subject_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5e",
+        "ticket_reference": "SUP-2041",
+        "verification_method": "callback_to_registered_number"
+      }
+    },
     "fileVendorApproval": {
       "method": "POST",
       "template": "/v1/approvals",
@@ -517,6 +567,15 @@
           "ticket_reference": "SUP-2041",
           "verification_method": "callback_to_registered_number"
         }
+      }
+    },
+    "claimCodeHalf": {
+      "method": "POST",
+      "template": "/v1/approvals/{approval_id}/code-half-claims",
+      "status": 201,
+      "body": {
+        "half": "7QK3",
+        "position": "first"
       }
     },
     "cancelVendorApproval": {
@@ -670,6 +729,24 @@
         }
       }
     },
+    "rejectTaxRegistration": {
+      "method": "PUT",
+      "template": "/v1/organisations/{organisation_id}/tax-registrations/{registration_id}/rejection",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "gstin": "33ABCDE1234F1Z7",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b",
+        "legal_name": "Example Hospitality Pvt Ltd",
+        "regime": "regular",
+        "state_code": "33",
+        "status": "open",
+        "verification": {
+          "rejected_at": "2026-11-24T13:10:11.120Z",
+          "state": "rejected"
+        }
+      }
+    },
     "revokeOrganisationDevice": {
       "method": "PUT",
       "template": "/v1/organisations/{organisation_id}/devices/{device_id}/revocation",
@@ -753,6 +830,898 @@
         "role": "support",
         "status": "setup_pending",
         "totp_enrolled": false
+      }
+    },
+    "listPlans": {
+      "method": "GET",
+      "template": "/v1/plans",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "key": "table_service",
+            "name_key": "plan.table_service",
+            "versions": [
+              {
+                "created_at": "2026-11-24T13:05:11.120Z",
+                "feature_keys": [
+                  "restaurant.core",
+                  "restaurant.kds",
+                  "restaurant.captain",
+                  "restaurant.reports.core"
+                ],
+                "included_outlets": 1,
+                "prices": [
+                  {
+                    "cycle": "monthly",
+                    "list_price": {
+                      "amount_paise": 129900,
+                      "currency": "INR"
+                    }
+                  }
+                ],
+                "state": "draft",
+                "version": 1
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "getPlan": {
+      "method": "GET",
+      "template": "/v1/plans/{plan_key}",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "key": "table_service",
+        "name_key": "plan.table_service",
+        "versions": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "feature_keys": [
+              "restaurant.core",
+              "restaurant.kds",
+              "restaurant.captain",
+              "restaurant.reports.core"
+            ],
+            "included_outlets": 1,
+            "prices": [
+              {
+                "cycle": "monthly",
+                "list_price": {
+                  "amount_paise": 129900,
+                  "currency": "INR"
+                }
+              }
+            ],
+            "state": "draft",
+            "version": 1
+          }
+        ]
+      }
+    },
+    "createPlan": {
+      "method": "POST",
+      "template": "/v1/plans",
+      "status": 201,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "key": "table_service",
+        "name_key": "plan.table_service",
+        "versions": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "feature_keys": [
+              "restaurant.core",
+              "restaurant.kds",
+              "restaurant.captain",
+              "restaurant.reports.core"
+            ],
+            "included_outlets": 1,
+            "prices": [
+              {
+                "cycle": "monthly",
+                "list_price": {
+                  "amount_paise": 129900,
+                  "currency": "INR"
+                }
+              }
+            ],
+            "state": "draft",
+            "version": 1
+          }
+        ]
+      }
+    },
+    "createPlanVersion": {
+      "method": "POST",
+      "template": "/v1/plans/{plan_key}/versions",
+      "status": 201,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "feature_keys": [
+          "restaurant.core",
+          "restaurant.kds",
+          "restaurant.captain",
+          "restaurant.reports.core"
+        ],
+        "included_outlets": 1,
+        "prices": [
+          {
+            "cycle": "monthly",
+            "list_price": {
+              "amount_paise": 129900,
+              "currency": "INR"
+            }
+          }
+        ],
+        "state": "draft",
+        "version": 2
+      }
+    },
+    "activatePlanVersion": {
+      "method": "POST",
+      "template": "/v1/plans/{plan_key}/versions/{version}/activation",
+      "status": 200,
+      "body": {
+        "activated_at": "2026-11-24T13:05:11.120Z",
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "feature_keys": [
+          "restaurant.core",
+          "restaurant.kds",
+          "restaurant.captain",
+          "restaurant.reports.core"
+        ],
+        "included_outlets": 1,
+        "prices": [
+          {
+            "cycle": "monthly",
+            "list_price": {
+              "amount_paise": 129900,
+              "currency": "INR"
+            }
+          }
+        ],
+        "state": "active",
+        "version": 1
+      }
+    },
+    "retirePlanVersion": {
+      "method": "POST",
+      "template": "/v1/plans/{plan_key}/versions/{version}/retirement",
+      "status": 200,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "feature_keys": [
+          "restaurant.core",
+          "restaurant.kds",
+          "restaurant.captain",
+          "restaurant.reports.core"
+        ],
+        "included_outlets": 1,
+        "prices": [
+          {
+            "cycle": "monthly",
+            "list_price": {
+              "amount_paise": 129900,
+              "currency": "INR"
+            }
+          }
+        ],
+        "retired_at": "2026-11-24T13:05:11.120Z",
+        "state": "retired",
+        "version": 1
+      }
+    },
+    "listBillingConfigurations": {
+      "method": "GET",
+      "template": "/v1/billing-configurations",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "effective_from": "2026-12-01",
+            "gst_rate_bp": 1800,
+            "gst_registered": true,
+            "hostry_state_code": "33",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8041",
+            "payment_terms_days": 7,
+            "payment_tolerance_paise": 99,
+            "sac": "997331"
+          }
+        ]
+      }
+    },
+    "createBillingConfiguration": {
+      "method": "POST",
+      "template": "/v1/billing-configurations",
+      "status": 201,
+      "body": {
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "effective_from": "2026-12-01",
+        "gst_rate_bp": 1800,
+        "gst_registered": true,
+        "hostry_state_code": "33",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8041",
+        "payment_terms_days": 7,
+        "payment_tolerance_paise": 99,
+        "sac": "997331"
+      }
+    },
+    "getOrganisationSubscription": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/subscription",
+      "status": 200,
+      "body": {
+        "current": {
+          "addons": [],
+          "agreed_price": {
+            "amount_paise": 129900,
+            "currency": "INR"
+          },
+          "cancel_at_period_end": false,
+          "created_at": "2026-11-24T13:05:11.120Z",
+          "cycle": "monthly",
+          "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+          "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+          "outlets_over_limit": false,
+          "overdue": false,
+          "paid_through": "2026-12-31",
+          "plan_key": "table_service",
+          "plan_version": 1,
+          "start_date": "2026-12-01",
+          "state": "active"
+        },
+        "history": []
+      }
+    },
+    "startSubscription": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/subscription",
+      "status": 201,
+      "body": {
+        "addons": [],
+        "agreed_price": {
+          "amount_paise": 129900,
+          "currency": "INR"
+        },
+        "cancel_at_period_end": false,
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "cycle": "monthly",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "outlets_over_limit": false,
+        "overdue": false,
+        "paid_through": "2026-12-31",
+        "plan_key": "table_service",
+        "plan_version": 1,
+        "start_date": "2026-12-01",
+        "state": "active"
+      }
+    },
+    "changeSubscription": {
+      "method": "PUT",
+      "template": "/v1/organisations/{organisation_id}/subscription",
+      "status": 200,
+      "body": {
+        "addons": [],
+        "agreed_price": {
+          "amount_paise": 129900,
+          "currency": "INR"
+        },
+        "cancel_at_period_end": false,
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "cycle": "annual",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "outlets_over_limit": false,
+        "overdue": false,
+        "paid_through": "2026-12-31",
+        "plan_key": "table_service",
+        "plan_version": 1,
+        "start_date": "2026-12-01",
+        "state": "active"
+      }
+    },
+    "cancelSubscription": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/subscription/cancellation",
+      "status": 200,
+      "body": {
+        "addons": [],
+        "agreed_price": {
+          "amount_paise": 129900,
+          "currency": "INR"
+        },
+        "cancel_at_period_end": true,
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "cycle": "monthly",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "outlets_over_limit": false,
+        "overdue": false,
+        "paid_through": "2026-12-31",
+        "plan_key": "table_service",
+        "plan_version": 1,
+        "start_date": "2026-12-01",
+        "state": "active"
+      }
+    },
+    "listCharges": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/charges",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "cgst": {
+              "amount_paise": 11691,
+              "currency": "INR"
+            },
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "due_date": "2026-12-08",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+            "igst": {
+              "amount_paise": 0,
+              "currency": "INR"
+            },
+            "kind": "period",
+            "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+            "outstanding": {
+              "amount_paise": 153282,
+              "currency": "INR"
+            },
+            "period_end": "2026-12-31",
+            "period_start": "2026-12-01",
+            "sgst": {
+              "amount_paise": 11691,
+              "currency": "INR"
+            },
+            "status": "open",
+            "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+            "taxable": {
+              "amount_paise": 129900,
+              "currency": "INR"
+            },
+            "total": {
+              "amount_paise": 153282,
+              "currency": "INR"
+            }
+          }
+        ]
+      }
+    },
+    "raiseCharge": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/charges",
+      "status": 201,
+      "body": {
+        "cgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "due_date": "2026-12-08",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+        "igst": {
+          "amount_paise": 0,
+          "currency": "INR"
+        },
+        "kind": "period",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "outstanding": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        },
+        "period_end": "2026-12-31",
+        "period_start": "2026-12-01",
+        "sgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "status": "open",
+        "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+        "taxable": {
+          "amount_paise": 129900,
+          "currency": "INR"
+        },
+        "total": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        }
+      }
+    },
+    "getCharge": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/charges/{charge_id}",
+      "status": 200,
+      "body": {
+        "cgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "due_date": "2026-12-08",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+        "igst": {
+          "amount_paise": 0,
+          "currency": "INR"
+        },
+        "kind": "period",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "outstanding": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        },
+        "period_end": "2026-12-31",
+        "period_start": "2026-12-01",
+        "sgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "status": "open",
+        "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+        "taxable": {
+          "amount_paise": 129900,
+          "currency": "INR"
+        },
+        "total": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        }
+      }
+    },
+    "setChargeInvoiceReference": {
+      "method": "PUT",
+      "template": "/v1/organisations/{organisation_id}/charges/{charge_id}/invoice-reference",
+      "status": 200,
+      "body": {
+        "cgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "due_date": "2026-12-08",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+        "igst": {
+          "amount_paise": 0,
+          "currency": "INR"
+        },
+        "invoice_reference": {
+          "date": "2026-12-01",
+          "number": "HQ/2627/0042"
+        },
+        "kind": "period",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "outstanding": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        },
+        "period_end": "2026-12-31",
+        "period_start": "2026-12-01",
+        "sgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "status": "open",
+        "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+        "taxable": {
+          "amount_paise": 129900,
+          "currency": "INR"
+        },
+        "total": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        }
+      }
+    },
+    "listChargePayments": {
+      "method": "GET",
+      "template": "/v1/organisations/{organisation_id}/charges/{charge_id}/payments",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "amount": {
+              "amount_paise": 153282,
+              "currency": "INR"
+            },
+            "charge_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8031",
+            "method": "upi",
+            "received_on": "2026-12-02",
+            "recorded_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a78",
+            "reference": "UTR1234567890"
+          }
+        ]
+      }
+    },
+    "recordPayment": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/charges/{charge_id}/payments",
+      "status": 201,
+      "body": {
+        "amount": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        },
+        "charge_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8031",
+        "method": "upi",
+        "received_on": "2026-12-02",
+        "recorded_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a78",
+        "reference": "UTR1234567890"
+      }
+    },
+    "reversePayment": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/charges/{charge_id}/payments/{payment_id}/reversal",
+      "status": 201,
+      "body": {
+        "amount": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        },
+        "charge_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8032",
+        "method": "upi",
+        "reason": "Duplicate period raised by mistake.",
+        "received_on": "2026-12-02",
+        "recorded_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a78",
+        "reference": "UTR1234567890",
+        "reversal_of": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8031"
+      }
+    },
+    "waiveCharge": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/charges/{charge_id}/waiver",
+      "status": 200,
+      "body": {
+        "cgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "due_date": "2026-12-08",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+        "igst": {
+          "amount_paise": 0,
+          "currency": "INR"
+        },
+        "kind": "period",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "outstanding": {
+          "amount_paise": 0,
+          "currency": "INR"
+        },
+        "period_end": "2026-12-31",
+        "period_start": "2026-12-01",
+        "reason": "Duplicate period raised by mistake.",
+        "sgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "status": "waived",
+        "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+        "taxable": {
+          "amount_paise": 129900,
+          "currency": "INR"
+        },
+        "total": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        }
+      }
+    },
+    "cancelCharge": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/charges/{charge_id}/cancellation",
+      "status": 200,
+      "body": {
+        "cgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "due_date": "2026-12-08",
+        "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+        "igst": {
+          "amount_paise": 0,
+          "currency": "INR"
+        },
+        "kind": "period",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "outstanding": {
+          "amount_paise": 0,
+          "currency": "INR"
+        },
+        "period_end": "2026-12-31",
+        "period_start": "2026-12-01",
+        "reason": "Duplicate period raised by mistake.",
+        "sgst": {
+          "amount_paise": 11691,
+          "currency": "INR"
+        },
+        "status": "cancelled",
+        "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+        "taxable": {
+          "amount_paise": 129900,
+          "currency": "INR"
+        },
+        "total": {
+          "amount_paise": 153282,
+          "currency": "INR"
+        }
+      }
+    },
+    "listLedgerEntries": {
+      "method": "GET",
+      "template": "/v1/ledger-lists/{list_kind}",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "age_days": 3,
+            "amount": {
+              "amount_paise": 153282,
+              "currency": "INR"
+            },
+            "due_date": "2026-12-08",
+            "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+            "organisation_name": "Example Hospitality",
+            "subject_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021"
+          }
+        ]
+      }
+    },
+    "exportLedger": {
+      "method": "GET",
+      "template": "/v1/ledger-exports",
+      "status": 200,
+      "contentType": "text/csv",
+      "body": "organisation_id,organisation_name,period_start,period_end,taxable_paise,total_paise,due_date,invoice_number,status,outstanding_paise\n"
+    },
+    "listTaxRuleSetMasters": {
+      "method": "GET",
+      "template": "/v1/tax-rule-sets",
+      "status": 200,
+      "body": {
+        "items": [
+          {
+            "calc_v": 1,
+            "created_at": "2026-11-24T13:05:11.120Z",
+            "effective_date": "2026-12-15",
+            "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+            "name": "GST restaurant services 2026 B",
+            "review_status": "unreviewed",
+            "revision": 1,
+            "rules": [
+              {
+                "cgst_bp": 250,
+                "doc_type": "tax_invoice",
+                "gst_applies": true,
+                "igst_bp": 0,
+                "order_channel": "dine_in",
+                "regime": "regular",
+                "sgst_bp": 250,
+                "specified_premises": false,
+                "tax_class": "fnb_standard"
+              }
+            ],
+            "state": "draft",
+            "version": 2
+          }
+        ]
+      }
+    },
+    "getTaxRuleSetMaster": {
+      "method": "GET",
+      "template": "/v1/tax-rule-sets/{rule_set_id}",
+      "status": 200,
+      "body": {
+        "calc_v": 1,
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "effective_date": "2026-12-15",
+        "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+        "name": "GST restaurant services 2026 B",
+        "review_status": "unreviewed",
+        "revision": 1,
+        "rules": [
+          {
+            "cgst_bp": 250,
+            "doc_type": "tax_invoice",
+            "gst_applies": true,
+            "igst_bp": 0,
+            "order_channel": "dine_in",
+            "regime": "regular",
+            "sgst_bp": 250,
+            "specified_premises": false,
+            "tax_class": "fnb_standard"
+          }
+        ],
+        "state": "draft",
+        "version": 2
+      }
+    },
+    "createTaxRuleSetDraft": {
+      "method": "POST",
+      "template": "/v1/tax-rule-sets",
+      "status": 201,
+      "body": {
+        "calc_v": 1,
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "effective_date": "2026-12-15",
+        "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+        "name": "GST restaurant services 2026 B",
+        "review_status": "unreviewed",
+        "revision": 1,
+        "rules": [
+          {
+            "cgst_bp": 250,
+            "doc_type": "tax_invoice",
+            "gst_applies": true,
+            "igst_bp": 0,
+            "order_channel": "dine_in",
+            "regime": "regular",
+            "sgst_bp": 250,
+            "specified_premises": false,
+            "tax_class": "fnb_standard"
+          }
+        ],
+        "state": "draft",
+        "version": 2
+      }
+    },
+    "updateTaxRuleSetDraft": {
+      "method": "PATCH",
+      "template": "/v1/tax-rule-sets/{rule_set_id}",
+      "status": 200,
+      "body": {
+        "calc_v": 1,
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "effective_date": "2026-12-15",
+        "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+        "name": "GST restaurant services 2026 B",
+        "review_status": "unreviewed",
+        "revision": 2,
+        "rules": [
+          {
+            "cgst_bp": 250,
+            "doc_type": "tax_invoice",
+            "gst_applies": true,
+            "igst_bp": 0,
+            "order_channel": "dine_in",
+            "regime": "regular",
+            "sgst_bp": 250,
+            "specified_premises": false,
+            "tax_class": "fnb_standard"
+          }
+        ],
+        "state": "draft",
+        "version": 2
+      }
+    },
+    "validateTaxRuleSet": {
+      "method": "POST",
+      "template": "/v1/tax-rule-sets/{rule_set_id}/validation",
+      "status": 200,
+      "body": {
+        "errors": [],
+        "valid": true,
+        "vectors_passed": 65,
+        "vectors_total": 65
+      }
+    },
+    "signTaxRuleSet": {
+      "method": "POST",
+      "template": "/v1/tax-rule-sets/{rule_set_id}/signature",
+      "status": 200,
+      "body": {
+        "calc_v": 1,
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "effective_date": "2026-12-15",
+        "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+        "name": "GST restaurant services 2026 B",
+        "review_status": "reviewed",
+        "revision": 1,
+        "rules": [
+          {
+            "cgst_bp": 250,
+            "doc_type": "tax_invoice",
+            "gst_applies": true,
+            "igst_bp": 0,
+            "order_channel": "dine_in",
+            "regime": "regular",
+            "sgst_bp": 250,
+            "specified_premises": false,
+            "tax_class": "fnb_standard"
+          }
+        ],
+        "signoff": {
+          "reference_note": "CA advice note 2026-11 ref 12",
+          "reviewer_name": "A. Reviewer",
+          "signed_on": "2026-11-20"
+        },
+        "state": "signed",
+        "version": 2
+      }
+    },
+    "publishTaxRuleSet": {
+      "method": "POST",
+      "template": "/v1/tax-rule-sets/{rule_set_id}/publication",
+      "status": 200,
+      "body": {
+        "calc_v": 1,
+        "created_at": "2026-11-24T13:05:11.120Z",
+        "effective_date": "2026-12-15",
+        "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+        "name": "GST restaurant services 2026 B",
+        "organisations_total": 3,
+        "published_at": "2026-11-24T13:09:40.000Z",
+        "review_status": "reviewed",
+        "revision": 1,
+        "rules": [
+          {
+            "cgst_bp": 250,
+            "doc_type": "tax_invoice",
+            "gst_applies": true,
+            "igst_bp": 0,
+            "order_channel": "dine_in",
+            "regime": "regular",
+            "sgst_bp": 250,
+            "specified_premises": false,
+            "tax_class": "fnb_standard"
+          }
+        ],
+        "signoff": {
+          "reference_note": "CA advice note 2026-11 ref 12",
+          "reviewer_name": "A. Reviewer",
+          "signed_on": "2026-11-20"
+        },
+        "state": "published",
+        "version": 2
+      }
+    },
+    "deleteTaxRuleSetDraft": {
+      "method": "DELETE",
+      "template": "/v1/tax-rule-sets/{rule_set_id}",
+      "status": 204,
+      "body": null
+    },
+    "suspendOrganisation": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/suspension",
+      "status": 200,
+      "body": {
+        "changed_at": "2026-11-24T13:05:11.120Z",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "status": "suspended"
+      }
+    },
+    "reinstateOrganisation": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/reinstatement",
+      "status": 200,
+      "body": {
+        "changed_at": "2026-11-24T13:05:11.120Z",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "status": "active"
+      }
+    },
+    "closeOrganisation": {
+      "method": "POST",
+      "template": "/v1/organisations/{organisation_id}/closure",
+      "status": 200,
+      "body": {
+        "changed_at": "2026-11-24T13:05:11.120Z",
+        "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+        "status": "closed"
       }
     }
   }

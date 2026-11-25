@@ -235,6 +235,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/organisations/{organisation_id}/tax-registrations/{registration_id}/rejection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Reject a tax registration
+         * @description Named panel operation on tenancy rejectTaxRegistration (Admin A0 AC 73 and 74), where vendor staff reject a registration whose GSTIN could not be proven. Allowed only while it is unverified (409 otherwise). The reason is kept in the vendor and tenant audit logs, never in the registration. Idempotent.
+         */
+        put: operations["rejectTaxRegistration"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/organisations/{organisation_id}/devices": {
         parameters: {
             query?: never;
@@ -601,6 +621,542 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/billing-configurations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Hostry GST configuration versions
+         * @description Named panel operation (ADR-0013 V4) on tenancy listBillingConfigurations, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. A directory read: no vendor audit entry is written (ADR-0013 V5).
+         */
+        get: operations["listBillingConfigurations"];
+        put?: never;
+        /**
+         * Add a GST configuration version
+         * @description Named panel operation (ADR-0013 V4) on tenancy createBillingConfiguration, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        post: operations["createBillingConfiguration"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ledger-exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export the ledger as CSV
+         * @description Named panel operation (ADR-0013 V4) on tenancy exportLedger, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Should (A1-Q12): organisation ids and names only, no GSTIN, phone or email (BR-A1-38). Audited per export.
+         */
+        get: operations["exportLedger"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ledger-lists/{list_kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Work lists for billing staff
+         * @description Named panel operation (ADR-0013 V4) on tenancy listLedgerEntries, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. A directory read: no vendor audit entry is written (ADR-0013 V5). overdue_charges (outstanding above tolerance and due before today IST), charges_to_raise (paid_through within 7 days or passed, no charge for the next period), charges_without_invoice_reference, pilots_ending (review date within 14 days), retired_version_subscriptions, outlets_over_limit. Derived on read; no scheduled tasks, nothing is sent.
+         */
+        get: operations["listLedgerEntries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/charges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List an organisation's charges
+         * @description Named panel operation (ADR-0013 V4) on tenancy listCharges, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. A directory read: no vendor audit entry is written (ADR-0013 V5).
+         */
+        get: operations["listCharges"];
+        put?: never;
+        /**
+         * Raise a charge
+         * @description Named panel operation (ADR-0013 V4) on tenancy raiseCharge, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. A second charge for a period that already has an open or paid charge is refused 409 duplicate_period unless it is an extra charge with a reason (BR-A1-31). GST is taken from the billing configuration at this moment and stored.
+         */
+        post: operations["raiseCharge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/charges/{charge_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read a charge (audited per read)
+         * @description Named panel operation (ADR-0013 V4) on tenancy getCharge, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        get: operations["getCharge"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/charges/{charge_id}/cancellation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a charge
+         * @description Named panel operation (ADR-0013 V4) on tenancy cancelCharge, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        post: operations["cancelCharge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/charges/{charge_id}/invoice-reference": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the invoice reference once
+         * @description Named panel operation (ADR-0013 V4) on tenancy setChargeInvoiceReference, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Set once; a second reference on the same charge is refused 409 invoice_reference_set. A mistyped reference cannot be edited: an admin cancels the charge and raises it again (A1-Q8).
+         */
+        put: operations["setChargeInvoiceReference"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/charges/{charge_id}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List payments of a charge
+         * @description Named panel operation (ADR-0013 V4) on tenancy listChargePayments, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. A directory read: no vendor audit entry is written (ADR-0013 V5).
+         */
+        get: operations["listChargePayments"];
+        put?: never;
+        /**
+         * Record a payment received by hand
+         * @description Named panel operation (ADR-0013 V4) on tenancy recordPayment, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Partial payments are allowed; a payment above the outstanding amount is refused 422 overpayment; a duplicate reference on a different payment is a warning only (BR-A1-45).
+         */
+        post: operations["recordPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/charges/{charge_id}/payments/{payment_id}/reversal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reverse a payment
+         * @description Named panel operation (ADR-0013 V4) on tenancy reversePayment, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        post: operations["reversePayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/charges/{charge_id}/waiver": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Waive a charge
+         * @description Named panel operation (ADR-0013 V4) on tenancy waiveCharge, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        post: operations["waiveCharge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/closure": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Execute an approved closure
+         * @description Named panel operation (ADR-0013 V4) on tenancy closeOrganisation, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Executes an approved request of kind org_close (ADR-0014 A1.3): the browser names the approval by approval_id and the admin service supplies the single-use grant it holds for the signed-in approver; the grant is never in a request or response of this API. Refused 409 approval_not_executable when the approval is not approved for this caller, was used or has expired (file and approve a new one). Upstream rule: Executed with the approver's token, the admin service token and a vendor approval grant of kind org_close (ADR-0014 A1.3): the grant is verified, its subject hash (organisation and target status) recomputed, its id recorded as used in this transaction, and the audit row written with the "show to owner" marker (V7). Refused 409 open_trading_day while any outlet has a day in progress (open, dated today or yesterday IST); the approval stays approved and a fresh grant may be issued until the request lapses.  Suspended means read and export only after the grace period; it never wipes devices and never blocks a trading day in progress; the device rule is the guarantee (A1.2 item 5).
+         */
+        post: operations["closeOrganisation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/reinstatement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Execute an approved reinstatement
+         * @description Named panel operation (ADR-0013 V4) on tenancy reinstateOrganisation, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Executes an approved request of kind org_reinstate (ADR-0014 A1.3): the browser names the approval by approval_id and the admin service supplies the single-use grant it holds for the signed-in approver; the grant is never in a request or response of this API. Refused 409 approval_not_executable when the approval is not approved for this caller, was used or has expired (file and approve a new one). Upstream rule: Executed with the approver's token, the admin service token and a vendor approval grant of kind org_reinstate (ADR-0014 A1.3): the grant is verified, its subject hash (organisation and target status) recomputed, its id recorded as used in this transaction, and the audit row written with the "show to owner" marker (V7). Reinstatement is not guarded.  Suspended means read and export only after the grace period; it never wipes devices and never blocks a trading day in progress; the device rule is the guarantee (A1.2 item 5).
+         */
+        post: operations["reinstateOrganisation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the current subscription and history
+         * @description Named panel operation (ADR-0013 V4) on tenancy getOrganisationSubscription, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. A directory read: no vendor audit entry is written (ADR-0013 V5).
+         */
+        get: operations["getOrganisationSubscription"];
+        /**
+         * Change plan, price or add-ons from the next charge
+         * @description Named panel operation (ADR-0013 V4) on tenancy changeSubscription, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        put: operations["changeSubscription"];
+        /**
+         * Assign a plan version or a pilot
+         * @description Named panel operation (ADR-0013 V4) on tenancy startSubscription, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Changes the subscription row and the organisation's entitlement rows in one transaction (BR-A1-14, CB1). Entitlements carry no expiry. A price below list needs admin.subscription.adjust and a reason; a replay with the same key returns the same row. The first plan moves organisation status trial to active (BR-A1-74).
+         */
+        post: operations["startSubscription"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/subscription/cancellation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record a cancellation at period end
+         * @description Named panel operation (ADR-0013 V4) on tenancy cancelSubscription, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. No further charge is raised after paid_through; no refund is modelled; closing the organisation is a separate lifecycle action.
+         */
+        post: operations["cancelSubscription"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organisations/{organisation_id}/suspension": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Execute an approved suspension
+         * @description Named panel operation (ADR-0013 V4) on tenancy suspendOrganisation, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Executes an approved request of kind org_suspend (ADR-0014 A1.3): the browser names the approval by approval_id and the admin service supplies the single-use grant it holds for the signed-in approver; the grant is never in a request or response of this API. Refused 409 approval_not_executable when the approval is not approved for this caller, was used or has expired (file and approve a new one). Upstream rule: Executed with the approver's token, the admin service token and a vendor approval grant of kind org_suspend (ADR-0014 A1.3): the grant is verified, its subject hash (organisation and target status) recomputed, its id recorded as used in this transaction, and the audit row written with the "show to owner" marker (V7). Refused 409 open_trading_day while any outlet has a day in progress (open, dated today or yesterday IST); the approval stays approved and a fresh grant may be issued until the request lapses.  Suspended means read and export only after the grace period; it never wipes devices and never blocks a trading day in progress; the device rule is the guarantee (A1.2 item 5).
+         */
+        post: operations["suspendOrganisation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List plans with their versions
+         * @description Named panel operation (ADR-0013 V4) on tenancy listPlans, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. A directory read: no vendor audit entry is written (ADR-0013 V5).
+         */
+        get: operations["listPlans"];
+        put?: never;
+        /**
+         * Create a plan with a draft first version
+         * @description Named panel operation (ADR-0013 V4) on tenancy createPlan, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        post: operations["createPlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/plans/{plan_key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a plan
+         * @description Named panel operation (ADR-0013 V4) on tenancy getPlan, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. A directory read: no vendor audit entry is written (ADR-0013 V5).
+         */
+        get: operations["getPlan"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/plans/{plan_key}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a draft version (a price or content change is a new version)
+         * @description Named panel operation (ADR-0013 V4) on tenancy createPlanVersion, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        post: operations["createPlanVersion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/plans/{plan_key}/versions/{version}/activation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Activate a draft version (immutable from here)
+         * @description Named panel operation (ADR-0013 V4) on tenancy activatePlanVersion, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        post: operations["activatePlanVersion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/plans/{plan_key}/versions/{version}/retirement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Retire an active version
+         * @description Named panel operation (ADR-0013 V4) on tenancy retirePlanVersion, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        post: operations["retirePlanVersion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tax-rule-sets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List rule-set versions with emit progress
+         * @description Named panel operation (ADR-0013 V4) on billing listTaxRuleSetMasters, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. A directory read: no vendor audit entry is written (ADR-0013 V5). Counts only; no tenant data (BR-A1-84). Newest version first.
+         */
+        get: operations["listTaxRuleSetMasters"];
+        put?: never;
+        /**
+         * Create a draft rule set
+         * @description Named panel operation (ADR-0013 V4) on billing createTaxRuleSetDraft, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record.
+         */
+        post: operations["createTaxRuleSetDraft"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tax-rule-sets/{rule_set_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read a rule-set version with emit progress
+         * @description Named panel operation (ADR-0013 V4) on billing getTaxRuleSetMaster, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. A directory read: no vendor audit entry is written (ADR-0013 V5).
+         */
+        get: operations["getTaxRuleSetMaster"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete a draft rule set
+         * @description Named panel operation (ADR-0013 V4) on billing deleteTaxRuleSetDraft, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Draft only; a signed or published version is never deleted (no such route).
+         */
+        delete: operations["deleteTaxRuleSetDraft"];
+        options?: never;
+        head?: never;
+        /**
+         * Edit a draft rule set
+         * @description Named panel operation (ADR-0013 V4) on billing updateTaxRuleSetDraft, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Draft only; 409 not_signed is not used here: a signed or published version answers 409 conflict. Needs If-Match.
+         */
+        patch: operations["updateTaxRuleSetDraft"];
+        trace?: never;
+    };
+    "/v1/tax-rule-sets/{rule_set_id}/publication": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish a signed rule set
+         * @description Named panel operation (ADR-0013 V4) on billing publishTaxRuleSet, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Executes an approved request of kind tax_rule_set_publish (ADR-0014 A1.3): the browser names the approval by approval_id and the admin service supplies the single-use grant it holds for the signed-in approver; the grant is never in a request or response of this API. Refused 409 approval_not_executable when the approval is not approved for this caller, was used or has expired (file and approve a new one). Upstream rule: Needs a tax_rule_set_publish grant (parameter) whose subject hash (rule-set id, content hash, effective date) matches; the lead time (deployment configuration, at least 24 hours) is checked here on billing's clock: 422 effective_date_too_soon. Marks published and queues one emit per organisation (op id UUIDv5(tenant, version)) in one transaction; also emitted to every organisation created later (BR-A1-120). Publishes billing.tax_rule_set.published and billing.vendor_access.recorded (vendor log only, no tenant).
+         */
+        post: operations["publishTaxRuleSet"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tax-rule-sets/{rule_set_id}/signature": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign a validated draft
+         * @description Named panel operation (ADR-0013 V4) on billing signTaxRuleSet, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Validates again; stores the CA sign-off record and a content hash; the version, including its effective date, is immutable from here. 422 validation if it fails.
+         */
+        post: operations["signTaxRuleSet"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/tax-rule-sets/{rule_set_id}/validation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate a draft against the BR-A1-82 checks and the conformance vectors
+         * @description Named panel operation (ADR-0013 V4) on billing validateTaxRuleSet, called with the admin service token and the signed-in vendor user's access token and the browser's Idempotency-Key where it writes. The serving service records the vendor audit entry in its own transaction and answers with the browser-safe result; the admin service writes no audit record. Every combination in use has a mapping, rates are whole basis points, components are two equal halves, and every vector in api-specs/tax/conformance passes against the draft rates (ADR-0014 R6.1).
+         */
+        post: operations["validateTaxRuleSet"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -622,8 +1178,21 @@ export interface components {
             absolute_expires_at: components["schemas"]["Timestamp"];
             support_session?: components["schemas"]["SupportSession"];
         };
-        /** @description Result of an approval decision as the browser sees it. The vendor approval grant of the executing kinds stays in the admin service and is never included. */
+        /** @description Result of an approval decision as the browser sees it. The vendor approval grant of the executing kinds stays in the admin service and is never included. For the kinds executed outside identity the approver's Approve call approves and executes in one request (ADR-0014 A2.5 item 4); a guard refusal keeps its own code in execution and leaves the approval approved, and the named operation with approval_id is the retry. */
         ApprovalDecisionView: {
+            /** @description What happened to the action itself. Absent for kinds identity does not hand to another service. */
+            execution?: {
+                /**
+                 * @description executed, or refused when a guard (open_trading_day, lead time, not signed) stopped it and the approval stays approved.
+                 * @enum {string}
+                 */
+                state: "executed" | "refused";
+                /**
+                 * @description The guard's problem code when state is refused.
+                 * @example open_trading_day
+                 */
+                code?: string;
+            };
             approval: components["schemas"]["VendorApproval"];
             code_half?: components["schemas"]["CodeHalf"];
         };
@@ -766,6 +1335,28 @@ export interface components {
             status: components["schemas"]["OrganisationStatus"];
             created_at: components["schemas"]["Timestamp"];
         };
+        /** @description Execution of an approved organisation lifecycle action (suspend, reinstate or close). The browser names the approval; the admin service holds the matching single-use grant. */
+        ExecuteLifecycle: {
+            /** @description Id of the approved vendor approval (fileVendorApproval, approveVendorApproval) of the matching kind for this organisation. */
+            approval_id: components["schemas"]["Id"];
+            ticket: components["schemas"]["TicketReference"];
+            reason: components["schemas"]["Reason"];
+            /**
+             * @description Close only: recorded confirmation that the owner was offered an export (BR-A1-72).
+             * @example true
+             */
+            owner_export_offered?: boolean;
+        };
+        /** @description Publication of a signed tax rule set after its tax_rule_set_publish approval was approved. */
+        ExecutePublication: {
+            /** @description Id of the approved tax_rule_set_publish approval whose subject is this rule set, its content hash and its effective date. */
+            approval_id: components["schemas"]["Id"];
+            /**
+             * @description Optional note for the vendor log, at most 200 characters, no personal data.
+             * @example Notified rate change
+             */
+            note?: string;
+        };
         /** @description Vendor sign-in. Failures (wrong password, unknown email, wrong or replayed TOTP, lockout) are all the same 401. */
         VendorSignIn: {
             /**
@@ -786,10 +1377,16 @@ export interface components {
             totp_code: string;
         };
         /**
-         * @description Client-generated, time-sortable UUIDv7 in lower-case canonical form (ADR-0003 policy; ULID is not accepted).
+         * @description Client-generated, time-sortable UUIDv7 in lower-case canonical form (ADR-0003 policy; ULID is not accepted). The row id of an entity whose entity file declares a deterministic id (id.rule uuidv5, ADR-0014) is a UUIDv5 in the same form, so two devices that write the same natural key converge on one row.
          * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
          */
         Id: string;
+        /**
+         * Format: date-time
+         * @description RFC 3339 instant in UTC.
+         * @example 2026-11-24T13:05:11.120Z
+         */
+        Timestamp: string;
         /**
          * @description Vendor role (a set of admin.* permissions; checks are on permissions).
          * @example support
@@ -804,16 +1401,14 @@ export interface components {
              * @example Priya
              */
             display_name: string;
+            /** @description When the user last signed in; absent before the first sign-in. */
+            last_sign_in_at?: components["schemas"]["Timestamp"];
+            /** @description From when the account may approve (created_at plus 7 days, ADR-0005 A2.3); in the past once eligible. */
+            can_approve_from?: components["schemas"]["Timestamp"];
             role: components["schemas"]["VendorRole"];
             /** @description admin.* permission strings held. */
             permissions: string[];
         };
-        /**
-         * Format: date-time
-         * @description RFC 3339 instant in UTC.
-         * @example 2026-11-24T13:05:11.120Z
-         */
-        Timestamp: string;
         /**
          * @description Support ticket reference. Fixed pattern so it can travel in events without free text.
          * @example SUP-2041
@@ -879,6 +1474,11 @@ export interface components {
              * @example not_found
              */
             code: string;
+            /**
+             * @description Optional sub-code that refines `code`, for example approval_not_executable carries not_approved, lapsed, executed, not_approver or subject_changed.
+             * @example not_approved
+             */
+            reason?: string;
             /** @description Field-level validation errors. */
             errors?: {
                 /**
@@ -1270,6 +1870,15 @@ export interface components {
             note?: string;
         };
         /**
+         * @description Free-text reason, 10 to 500 characters. Stays with the owning record; never placed in events.
+         * @example Owner phoned to report a lost tablet.
+         */
+        Reason: string;
+        /** @description Reject a registration. The reason is the record for the auditor. */
+        RejectRegistration: {
+            reason: components["schemas"]["Reason"];
+        };
+        /**
          * @description Device kind (ADR-0005 section 4).
          * @example pos
          * @enum {string}
@@ -1309,11 +1918,6 @@ export interface components {
             /** @description Opaque cursor for the next page; absent when there are no more results. */
             next_cursor?: string;
         };
-        /**
-         * @description Free-text reason, 10 to 500 characters. Stays with the owning record; never placed in events.
-         * @example Owner phoned to report a lost tablet.
-         */
-        Reason: string;
         /**
          * @description How the requester was verified.
          * @example callback_to_registered_number
@@ -1374,6 +1978,10 @@ export interface components {
             requested_by: components["schemas"]["Id"];
             approved_by?: components["schemas"]["Id"];
             ticket_reference: components["schemas"]["TicketReference"];
+            /** @description The requester's reason, shown to the approver (Admin A0 AC 90). */
+            reason?: components["schemas"]["Reason"];
+            /** @description Human-readable statement of what approving will do, built from the stored fields, for example "Suspend organisation Example Hospitality". The approver is shown this, never requester text. */
+            subject?: string;
             verification_method: components["schemas"]["RequesterVerification"];
             created_at: components["schemas"]["Timestamp"];
             expires_at: components["schemas"]["Timestamp"];
@@ -1525,6 +2133,10 @@ export interface components {
             status: "dormant" | "active" | "closed" | "closed_unreconciled";
             issued_at: components["schemas"]["Timestamp"];
             closed_at?: components["schemas"]["Timestamp"];
+            /** @description When billing confirmed that its register holds every number up to last_number (billing.series.reconciled). Empty at closure; a series that is closed and has no tail_confirmed_at reads "closed, awaiting device" (ADR-0014 A2.5 item 2). */
+            tail_confirmed_at?: components["schemas"]["Timestamp"];
+            /** @description The last running number the device stated when it closed the series (control intent series.close, or its drain record). Empty at closure and until reconciled. */
+            last_number?: number;
         };
         /** @description A page of series in the caller's outlet scope. */
         DocumentSeriesPage: {
@@ -1556,6 +2168,8 @@ export interface components {
         };
         /** @description A staff member. Mobile number only in masked form; email and ID documents never appear. */
         Member: {
+            /** @description True while the member signed in from a binding under caution (a new device, 24 hours; strong-only actions are blocked). Shown to support so the owner can be told why an action is refused. */
+            new_device_caution?: boolean;
             id: components["schemas"]["Id"];
             /**
              * @description Display name.
@@ -1643,6 +2257,670 @@ export interface components {
             items: components["schemas"]["Device"][];
             /** @description Opaque cursor for the next page; absent when there are no more results. */
             next_cursor?: string;
+        };
+        /** @description Cursor pagination field shared by every list response (compose with allOf). */
+        PageCursor: {
+            /**
+             * @description Opaque cursor for the next page; absent when there are no more results.
+             * @example eyJhZnRlciI6IjAxOTBhMWIyLWMzZDQtN2U1Zi04YTliLTBjMWQyZTNmNGE1YiJ9
+             */
+            next_cursor?: string;
+        };
+        /** @description Hostry's own GST configuration for charges, versioned and effective-dated (BR-A1-30). Hostry's GST invoices are issued from the founder's books; this only drives the GST shown on a charge. x-provisional: SAC and registration facts are CA-pending (A1-Q3). */
+        BillingConfiguration: {
+            id: components["schemas"]["Id"];
+            /**
+             * Format: date
+             * @description First date the configuration applies to charges raised.
+             * @example 2026-11-24
+             */
+            effective_from: string;
+            hostry_state_code: components["schemas"]["StateCode"];
+            /**
+             * @description SAC code; seeded 997331 as a placeholder until the CA answers.
+             * @example 997331
+             */
+            sac: string;
+            /**
+             * @description GST rate in basis points (default 1800).
+             * @example 1800
+             */
+            gst_rate_bp: number;
+            /** @description When false no GST is added to a charge. */
+            gst_registered: boolean;
+            /**
+             * @description A charge counts as paid within this many paise of the total (default 99).
+             * @example 99
+             */
+            payment_tolerance_paise: number;
+            /**
+             * @description Days from the first charge to its due date (default 7).
+             * @example 7
+             */
+            payment_terms_days: number;
+            created_at: components["schemas"]["Timestamp"];
+        };
+        BillingConfigurationPage: components["schemas"]["PageCursor"] & {
+            /** @description Items, in the order stated by the operation. */
+            items: components["schemas"]["BillingConfiguration"][];
+        };
+        /** @description A new configuration version. */
+        CreateBillingConfiguration: {
+            /**
+             * Format: date
+             * @description First date the configuration applies to charges raised.
+             * @example 2026-11-24
+             */
+            effective_from: string;
+            hostry_state_code: components["schemas"]["StateCode"];
+            /**
+             * @description SAC code; seeded 997331 as a placeholder until the CA answers.
+             * @example 997331
+             */
+            sac: string;
+            /**
+             * @description GST rate in basis points (default 1800).
+             * @example 1800
+             */
+            gst_rate_bp: number;
+            /** @description When false no GST is added to a charge. */
+            gst_registered: boolean;
+            /**
+             * @description A charge counts as paid within this many paise of the total (default 99).
+             * @example 99
+             */
+            payment_tolerance_paise: number;
+            /**
+             * @description Days from the first charge to its due date (default 7).
+             * @example 7
+             */
+            payment_terms_days: number;
+        };
+        /**
+         * @description Work lists for staff; nothing is sent automatically (BR-A1-50).
+         * @example overdue_charges
+         * @enum {string}
+         */
+        LedgerListKind: "overdue_charges" | "charges_to_raise" | "charges_without_invoice_reference" | "pilots_ending" | "retired_version_subscriptions" | "outlets_over_limit";
+        /** @description Amount in integer paise. Never a float. */
+        Money: {
+            /**
+             * Format: int64
+             * @description Amount in paise (1 INR = 100 paise).
+             * @example 12500
+             */
+            amount_paise: number;
+            /**
+             * @description ISO 4217 currency code.
+             * @example INR
+             * @enum {string}
+             */
+            currency: "INR";
+        };
+        /** @description One row of a work list. */
+        LedgerListRow: {
+            organisation_id: components["schemas"]["Id"];
+            /**
+             * @description Organisation name from the directory.
+             * @example Example Hospitality
+             */
+            organisation_name: string;
+            subject_id?: components["schemas"]["Id"];
+            /**
+             * Format: date
+             * @description Due date or review date.
+             * @example 2026-11-24
+             */
+            due_date?: string;
+            /**
+             * @description Days past due, for the overdue list; buckets 1-7, 8-15, 16-30, over 30 are derived by the client.
+             * @example 3
+             */
+            age_days?: number;
+            amount?: components["schemas"]["Money"];
+        };
+        LedgerListRowPage: components["schemas"]["PageCursor"] & {
+            /** @description Items, in the order stated by the operation. */
+            items: components["schemas"]["LedgerListRow"][];
+        };
+        /** @description Number and date of the invoice raised in the founder's books; set once, never edited; the panel does not check it (BR-A1-34). */
+        InvoiceReference: {
+            /**
+             * @description Invoice number as in the books.
+             * @example HQ/2627/0042
+             */
+            number: string;
+            /**
+             * Format: date
+             * @description Invoice date.
+             * @example 2026-11-24
+             */
+            date: string;
+        };
+        /**
+         * @description open, paid (derived from payments within tolerance), waived or cancelled (reversing rows).
+         * @example open
+         * @enum {string}
+         */
+        ChargeStatus: "open" | "paid" | "waived" | "cancelled";
+        /** @description A charge, append-only (BR-A1-31). GST comes from the billing configuration at the moment it is raised and is stored here; there is no round-off and no invoice rendering. */
+        Charge: {
+            id: components["schemas"]["Id"];
+            organisation_id: components["schemas"]["Id"];
+            subscription_id: components["schemas"]["Id"];
+            /**
+             * @description period or extra (an extra charge carries a reason).
+             * @example period
+             * @enum {string}
+             */
+            kind: "period" | "extra";
+            /**
+             * Format: date
+             * @description First day covered.
+             * @example 2026-11-24
+             */
+            period_start: string;
+            /**
+             * Format: date
+             * @description Last day covered.
+             * @example 2026-11-24
+             */
+            period_end: string;
+            taxable: components["schemas"]["Money"];
+            cgst: components["schemas"]["Money"];
+            sgst: components["schemas"]["Money"];
+            igst: components["schemas"]["Money"];
+            total: components["schemas"]["Money"];
+            /**
+             * Format: date
+             * @description Due date (BR-A1-33).
+             * @example 2026-11-24
+             */
+            due_date: string;
+            invoice_reference?: components["schemas"]["InvoiceReference"];
+            status: components["schemas"]["ChargeStatus"];
+            outstanding: components["schemas"]["Money"];
+            /** @description Free-text note for staff, at most 200 characters, no personal data. */
+            note?: string;
+            /** @description Reason for an extra, waived or cancelled charge. */
+            reason?: string;
+            created_at: components["schemas"]["Timestamp"];
+        };
+        ChargePage: components["schemas"]["PageCursor"] & {
+            /** @description Items, in the order stated by the operation. */
+            items: components["schemas"]["Charge"][];
+        };
+        /** @description Raise a charge for the next period, or an extra charge. */
+        RaiseCharge: {
+            /**
+             * @description period or extra.
+             * @example period
+             * @enum {string}
+             */
+            kind: "period" | "extra";
+            /**
+             * Format: date
+             * @description First day covered.
+             * @example 2026-11-24
+             */
+            period_start: string;
+            /**
+             * Format: date
+             * @description Last day covered.
+             * @example 2026-11-24
+             */
+            period_end: string;
+            taxable?: components["schemas"]["Money"];
+            reason?: components["schemas"]["Reason"];
+            /** @description Staff note. */
+            note?: string;
+        };
+        /** @description A reason for an adjustment. */
+        ReasonBody: {
+            reason: components["schemas"]["Reason"];
+        };
+        /** @description The invoice reference from the books. */
+        SetInvoiceReference: {
+            invoice_reference: components["schemas"]["InvoiceReference"];
+        };
+        /**
+         * @description Payment method; gateway_link is reserved and not available in A1.
+         * @example upi
+         * @enum {string}
+         */
+        PaymentMethod: "upi" | "bank_transfer" | "cash" | "cheque";
+        /** @description A recorded payment, append-only and idempotent by key (BR-A1-43). A correction is a reversing row. */
+        LedgerPayment: {
+            id: components["schemas"]["Id"];
+            charge_id: components["schemas"]["Id"];
+            amount: components["schemas"]["Money"];
+            method: components["schemas"]["PaymentMethod"];
+            /**
+             * @description UTR or cheque number, up to 40 characters.
+             * @example UTR1234567890
+             */
+            reference?: string;
+            /**
+             * Format: date
+             * @description Date received, not in the future.
+             * @example 2026-11-24
+             */
+            received_on: string;
+            recorded_by: components["schemas"]["Id"];
+            reversal_of?: components["schemas"]["Id"];
+            /** @description Reason, for a reversing row. */
+            reason?: string;
+            created_at: components["schemas"]["Timestamp"];
+        };
+        LedgerPaymentPage: components["schemas"]["PageCursor"] & {
+            /** @description Items, in the order stated by the operation. */
+            items: components["schemas"]["LedgerPayment"][];
+        };
+        /** @description Record a payment by hand. A payment above the outstanding amount is refused 422 overpayment. */
+        RecordPayment: {
+            amount: components["schemas"]["Money"];
+            method: components["schemas"]["PaymentMethod"];
+            /**
+             * @description UTR or cheque number.
+             * @example UTR1234567890
+             */
+            reference?: string;
+            /**
+             * Format: date
+             * @description Date received.
+             * @example 2026-11-24
+             */
+            received_on: string;
+        };
+        /** @description The organisation after the action. */
+        LifecycleResult: {
+            organisation_id: components["schemas"]["Id"];
+            status: components["schemas"]["OrganisationStatus"];
+            changed_at: components["schemas"]["Timestamp"];
+        };
+        /**
+         * @description Billing cycle; none is the pilot.
+         * @example monthly
+         * @enum {string}
+         */
+        Cycle: "none" | "monthly" | "annual";
+        /** @description An add-on line, for example an extra outlet. */
+        Addon: {
+            /**
+             * @description Add-on key.
+             * @example extra_outlet
+             */
+            name: string;
+            /**
+             * @description Quantity.
+             * @example 1
+             */
+            quantity: number;
+            agreed_price: components["schemas"]["Money"];
+        };
+        /**
+         * @description Stored state: pilot, active or cancelled. overdue is derived and shown separately (BR-A1-26).
+         * @example active
+         * @enum {string}
+         */
+        SubscriptionState: "pilot" | "active" | "cancelled";
+        /** @description A subscription row. One is current per organisation; earlier rows are history. The ledger holds no personal data (BR-A1-27). */
+        Subscription: {
+            id: components["schemas"]["Id"];
+            organisation_id: components["schemas"]["Id"];
+            /**
+             * @description Plan key.
+             * @example table_service
+             */
+            plan_key: string;
+            /**
+             * @description Plan version.
+             * @example 1
+             */
+            plan_version: number;
+            cycle: components["schemas"]["Cycle"];
+            agreed_price: components["schemas"]["Money"];
+            /** @description Add-on lines. */
+            addons: components["schemas"]["Addon"][];
+            /**
+             * Format: date
+             * @description Start date.
+             * @example 2026-11-24
+             */
+            start_date: string;
+            /**
+             * Format: date
+             * @description Paid-through date; for a pilot the review date.
+             * @example 2026-11-24
+             */
+            paid_through?: string;
+            state: components["schemas"]["SubscriptionState"];
+            /** @description Derived: an open charge past its due date. */
+            overdue: boolean;
+            /** @description Cancellation requested; no charge after paid_through. */
+            cancel_at_period_end: boolean;
+            /** @description Soft limit notice in Phase 2 (A1-Q9). */
+            outlets_over_limit?: boolean;
+            created_at: components["schemas"]["Timestamp"];
+            superseded_at?: components["schemas"]["Timestamp"];
+        };
+        /** @description The current subscription and the earlier rows. */
+        SubscriptionHistory: {
+            current?: components["schemas"]["Subscription"];
+            /** @description Earlier rows, newest first. */
+            history: components["schemas"]["Subscription"][];
+        };
+        /** @description A plan or price change; takes effect from the next charge as a new row, no proration (BR-A1-23). */
+        ChangeSubscription: {
+            /**
+             * @description Plan key.
+             * @example table_service
+             */
+            plan_key: string;
+            /**
+             * @description Active version.
+             * @example 1
+             */
+            plan_version: number;
+            cycle: components["schemas"]["Cycle"];
+            /**
+             * Format: date
+             * @description First day of the next charge period.
+             * @example 2026-11-24
+             */
+            effective_from: string;
+            agreed_price?: components["schemas"]["Money"];
+            /** @description Add-on lines. */
+            addons?: components["schemas"]["Addon"][];
+            reason?: components["schemas"]["Reason"];
+        };
+        /** @description Assign a plan version or a pilot. Below-list price needs admin.subscription.adjust and a reason; a pilot has no charge and a review date (default 90 days). */
+        StartSubscription: {
+            /**
+             * @description Plan key.
+             * @example table_service
+             */
+            plan_key: string;
+            /**
+             * @description Active version to assign.
+             * @example 1
+             */
+            plan_version: number;
+            cycle: components["schemas"]["Cycle"];
+            /**
+             * Format: date
+             * @description Start date.
+             * @example 2026-11-24
+             */
+            start_date: string;
+            agreed_price?: components["schemas"]["Money"];
+            /** @description Add-on lines. */
+            addons?: components["schemas"]["Addon"][];
+            /**
+             * Format: date
+             * @description Pilot review date.
+             * @example 2026-11-24
+             */
+            review_date?: string;
+            reason?: components["schemas"]["Reason"];
+        };
+        /** @description Record the owner's cancellation request. */
+        CancelSubscription: {
+            reason?: components["schemas"]["Reason"];
+        };
+        /** @description A list price for one cycle, in paise excluding GST. */
+        PlanPrice: {
+            cycle: components["schemas"]["Cycle"];
+            list_price: components["schemas"]["Money"];
+        };
+        /** @description Content of a plan version. Plans, versions, prices and feature keys are data, never code (BR-A1-11). */
+        PlanVersionDraft: {
+            /** @description Feature keys granted; an app ignores a key it does not know. */
+            feature_keys: string[];
+            /**
+             * @description Outlets included; the only metered quantity (BR-A1-13).
+             * @example 1
+             */
+            included_outlets: number;
+            /** @description List price per cycle. */
+            prices: components["schemas"]["PlanPrice"][];
+        };
+        /**
+         * @description draft is editable; active is immutable and sellable; retired stays on existing subscriptions (BR-A1-10, BR-A1-15).
+         * @example draft
+         * @enum {string}
+         */
+        PlanVersionState: "draft" | "active" | "retired";
+        PlanVersion: components["schemas"]["PlanVersionDraft"] & {
+            /**
+             * @description Version number within the plan, from 1.
+             * @example 1
+             */
+            version: number;
+            state: components["schemas"]["PlanVersionState"];
+            created_at: components["schemas"]["Timestamp"];
+            activated_at?: components["schemas"]["Timestamp"];
+            retired_at?: components["schemas"]["Timestamp"];
+        };
+        /** @description A plan: a key and its versions. Seeded drafts: pilot, table_service and an extra-outlet add-on become sellable only after the founder activates them (A1-Q1, A1-Q2). */
+        Plan: {
+            /**
+             * @description Unique lower_snake key.
+             * @example table_service
+             */
+            key: string;
+            /**
+             * @description i18n key of the plan name.
+             * @example plan.table_service
+             */
+            name_key: string;
+            /** @description Versions, newest first. */
+            versions: components["schemas"]["PlanVersion"][];
+            created_at: components["schemas"]["Timestamp"];
+        };
+        PlanPage: components["schemas"]["PageCursor"] & {
+            /** @description Items, in the order stated by the operation. */
+            items: components["schemas"]["Plan"][];
+        };
+        /** @description A new plan with its first draft version. */
+        CreatePlan: {
+            /**
+             * @description Unique lower_snake key.
+             * @example table_service
+             */
+            key: string;
+            /**
+             * @description i18n key of the plan name.
+             * @example plan.table_service
+             */
+            name_key: string;
+            version: components["schemas"]["PlanVersionDraft"];
+        };
+        /** @description The CA sign-off record (reviewer, date and a reference note); immutable once signed. */
+        SignOff: {
+            /**
+             * @description Reviewer's name.
+             * @example A. Reviewer
+             */
+            reviewer_name: string;
+            /**
+             * Format: date
+             * @description Date of sign-off.
+             * @example 2026-11-24
+             */
+            signed_on: string;
+            /**
+             * @description Where the advice is recorded, at least 10 characters.
+             * @example CA advice note 2026-11 ref 12
+             */
+            reference_note: string;
+        };
+        /**
+         * @description Sale document type, following the regime of the registration (ADR-0002 S7): tax_invoice (regular), bill_of_supply (composition or exempt), plain_bill (unregistered).
+         * @example tax_invoice
+         * @enum {string}
+         */
+        BillDocType: "tax_invoice" | "bill_of_supply" | "plain_bill";
+        /** @description One mapping of (tax class, regime, specified-premises flag, order channel) to rate components and a document type. Components for an intra-state supply are two equal halves; igst_bp is 0 in Phase 2 (RM-T8). Maps one-to-one to the tax_rule entity. */
+        TaxRule: {
+            /**
+             * @description Tax class key.
+             * @example fnb_standard
+             */
+            tax_class: string;
+            /**
+             * @description Registration regime.
+             * @example regular
+             * @enum {string}
+             */
+            regime: "regular" | "composition" | "unregistered";
+            /** @description Specified-premises flag of the outlet for the FY. */
+            specified_premises: boolean;
+            /**
+             * @description Order channel; eco supplies may carry their own rule.
+             * @example dine_in
+             * @enum {string}
+             */
+            order_channel: "dine_in" | "takeaway" | "counter" | "eco";
+            doc_type: components["schemas"]["BillDocType"];
+            /** @description False for non-GST items (for example alcohol) and for composition and unregistered. */
+            gst_applies: boolean;
+            /**
+             * @description CGST in basis points.
+             * @example 250
+             */
+            cgst_bp: number;
+            /**
+             * @description SGST in basis points; equals cgst_bp.
+             * @example 250
+             */
+            sgst_bp: number;
+            /**
+             * @description IGST in basis points; must be 0 in Phase 2.
+             * @example 0
+             */
+            igst_bp: number;
+            /** @description SAC or HSN code, up to 8 digits; not shipped until the CA advises (RM-T7). */
+            sac?: string;
+        };
+        /** @description A rule-set version in the vendor master: draft (editable), signed (immutable, sign-off recorded) or published (emitted to every organisation). */
+        TaxRuleSetMaster: {
+            id: components["schemas"]["Id"];
+            /**
+             * @description Platform-wide version number, assigned at creation.
+             * @example 2
+             */
+            version: number;
+            /**
+             * @description Edit counter of a draft; the ETag is its string form.
+             * @example 1
+             */
+            revision: number;
+            /**
+             * @description Label.
+             * @example GST restaurant services 2026 B
+             */
+            name: string;
+            /**
+             * Format: date
+             * @description Effective date; immutable from signing.
+             * @example 2026-11-24
+             */
+            effective_date: string;
+            /**
+             * @description Calculation version.
+             * @example 1
+             */
+            calc_v: number;
+            /**
+             * @description draft, signed or published. A published version is never edited, withdrawn or deleted (BR-A1-81).
+             * @example draft
+             * @enum {string}
+             */
+            state: "draft" | "signed" | "published";
+            /**
+             * @description reviewed (sign-off recorded) or unreviewed.
+             * @example unreviewed
+             * @enum {string}
+             */
+            review_status: "reviewed" | "unreviewed";
+            signoff?: components["schemas"]["SignOff"];
+            /**
+             * @description Hash stored at signing.
+             * @example a3f5c0de9d1b7e44c2f9a8b6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6
+             */
+            content_hash?: string;
+            /** @description Mappings. */
+            rules: components["schemas"]["TaxRule"][];
+            /**
+             * @description Organisations the version was queued for (published only).
+             * @example 0
+             */
+            organisations_total?: number;
+            /**
+             * @description Acknowledged emits (BR-A1-84); counts only, no tenant data.
+             * @example 0
+             */
+            organisations_acknowledged?: number;
+            created_at: components["schemas"]["Timestamp"];
+            published_at?: components["schemas"]["Timestamp"];
+        };
+        TaxRuleSetMasterPage: components["schemas"]["PageCursor"] & {
+            /** @description Items, in the order stated by the operation. */
+            items: components["schemas"]["TaxRuleSetMaster"][];
+        };
+        /** @description Content of a draft. */
+        TaxRuleSetDraft: {
+            /**
+             * @description Label.
+             * @example GST restaurant services 2026 B
+             */
+            name: string;
+            /**
+             * Format: date
+             * @description Effective date.
+             * @example 2026-11-24
+             */
+            effective_date: string;
+            /**
+             * @description Calculation version.
+             * @example 1
+             */
+            calc_v: number;
+            /** @description Mappings. */
+            rules: components["schemas"]["TaxRule"][];
+        };
+        /** @description Sign-off of a validated draft. */
+        SignTaxRuleSet: {
+            signoff: components["schemas"]["SignOff"];
+        };
+        /** @description Outcome of the BR-A1-82 checks and the shared conformance vectors. */
+        TaxRuleSetValidation: {
+            /** @description True when every check and every vector passes. */
+            valid: boolean;
+            /** @description Failed checks. */
+            errors: {
+                /**
+                 * @description Stable code, for example mapping_missing, odd_rate, unequal_halves, vector_failed.
+                 * @example mapping_missing
+                 */
+                code: string;
+                /**
+                 * @description Which mapping or vector.
+                 * @example fnb_standard/regular/false/dine_in
+                 */
+                detail: string;
+            }[];
+            /**
+             * @description Conformance vectors run.
+             * @example 48
+             */
+            vectors_total: number;
+            /**
+             * @description Vectors passed.
+             * @example 48
+             */
+            vectors_passed: number;
         };
     };
     responses: {
@@ -1763,6 +3041,15 @@ export interface components {
                 "application/problem+json": components["schemas"]["Problem"];
             };
         };
+        /** @description The approval is not executable by this caller (409 approval_not_executable with reason not_approved, lapsed, executed, not_approver or subject_changed; only this service answers it, from identity's refusal to issue a grant), the organisation has a trading day in progress (suspend and close), or the state does not allow the action (rule set not signed). Nothing changed; the approval stays approved unless used. */
+        ExecuteConflict: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
         /** @description Rate limit exceeded; honour Retry-After. */
         TooManyRequests: {
             headers: {
@@ -1873,6 +3160,57 @@ export interface components {
                 "application/problem+json": components["schemas"]["Problem"];
             };
         };
+        /** @description The panel keeps no unapplied credit in A1. */
+        Overpayment: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "type": "urn:hostry:problem:overpayment",
+                 *       "title": "Payment exceeds outstanding",
+                 *       "status": 422,
+                 *       "code": "overpayment"
+                 *     }
+                 */
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description If-Match did not match the current revision. */
+        PreconditionFailed: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "type": "urn:hostry:problem:precondition_failed",
+                 *       "title": "Stale version",
+                 *       "status": 412,
+                 *       "code": "precondition_failed"
+                 *     }
+                 */
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
+        /** @description The effective date is less than the lead time (deployment configuration, at least 24 hours) ahead when publication executes. */
+        LeadTooShort: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "type": "urn:hostry:problem:effective_date_too_soon",
+                 *       "title": "Effective date too soon",
+                 *       "status": 422,
+                 *       "code": "effective_date_too_soon"
+                 *     }
+                 */
+                "application/problem+json": components["schemas"]["Problem"];
+            };
+        };
     };
     parameters: {
         /**
@@ -1890,6 +3228,11 @@ export interface components {
          * @example 25
          */
         VendorLimit: number;
+        /**
+         * @description Entity tag of the version being edited (from the last read); a stale tag returns 412 with code precondition_failed.
+         * @example "1"
+         */
+        IfMatch: string;
     };
     requestBodies: never;
     headers: {
@@ -2381,6 +3724,11 @@ export interface operations {
                  * @example trial
                  */
                 status?: components["schemas"]["OrganisationStatus"];
+                /**
+                 * @description When true, only organisations with at least one open tax registration that is not yet verified (the onboarding work queue, Admin A0 AC 73 and 74); when false, only those without.
+                 * @example true
+                 */
+                has_unverified_registration?: boolean;
                 /**
                  * @description Opaque cursor from a previous response's next_cursor.
                  * @example eyJhZnRlciI6IjAxOTBhMWIyLWMzZDQtN2U1Zi04YTliLTBjMWQyZTNmNGE1YiJ9
@@ -2903,6 +4251,77 @@ export interface operations {
                      *         "state": "verified",
                      *         "method": "certificate_seen",
                      *         "verified_at": "2026-11-24T13:10:11.120Z"
+                     *       },
+                     *       "status": "open",
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["TaxRegistration"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["GstinInUse"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    rejectTaxRegistration: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation ID.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+                /**
+                 * @description Tax registration ID.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b
+                 */
+                registration_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "reason": "The certificate shown does not match the legal name."
+                 *     }
+                 */
+                "application/json": components["schemas"]["RejectRegistration"];
+            };
+        };
+        responses: {
+            /** @description Registration rejected (idempotent). No series can be issued for it; the tenant may correct the GSTIN or close the registration. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6b",
+                     *       "legal_name": "Example Hospitality Pvt Ltd",
+                     *       "regime": "regular",
+                     *       "gstin": "33ABCDE1234F1Z7",
+                     *       "state_code": "33",
+                     *       "verification": {
+                     *         "state": "rejected",
+                     *         "rejected_at": "2026-11-24T13:10:11.120Z"
                      *       },
                      *       "status": "open",
                      *       "created_at": "2026-11-24T13:05:11.120Z"
@@ -4227,6 +5646,2475 @@ export interface operations {
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
             409: components["responses"]["SupportSessionRequired"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    listBillingConfigurations: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Opaque cursor from a previous response's next_cursor.
+                 * @example eyJhZnRlciI6IjAxOTBhMWIyLWMzZDQtN2U1Zi04YTliLTBjMWQyZTNmNGE1YiJ9
+                 */
+                cursor?: components["parameters"]["Cursor"];
+                /**
+                 * @description Page size for vendor lists (default 25, maximum 100).
+                 * @example 25
+                 */
+                limit?: components["parameters"]["VendorLimit"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A page, newest first. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8041",
+                     *           "effective_from": "2026-12-01",
+                     *           "hostry_state_code": "33",
+                     *           "sac": "997331",
+                     *           "gst_rate_bp": 1800,
+                     *           "gst_registered": true,
+                     *           "payment_tolerance_paise": 99,
+                     *           "payment_terms_days": 7,
+                     *           "created_at": "2026-11-24T13:05:11.120Z"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BillingConfigurationPage"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    createBillingConfiguration: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "effective_from": "2026-12-01",
+                 *       "hostry_state_code": "33",
+                 *       "sac": "997331",
+                 *       "gst_rate_bp": 1800,
+                 *       "gst_registered": true,
+                 *       "payment_tolerance_paise": 99,
+                 *       "payment_terms_days": 7
+                 *     }
+                 */
+                "application/json": components["schemas"]["CreateBillingConfiguration"];
+            };
+        };
+        responses: {
+            /** @description The configuration. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8041",
+                     *       "effective_from": "2026-12-01",
+                     *       "hostry_state_code": "33",
+                     *       "sac": "997331",
+                     *       "gst_rate_bp": 1800,
+                     *       "gst_registered": true,
+                     *       "payment_tolerance_paise": 99,
+                     *       "payment_terms_days": 7,
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["BillingConfiguration"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    exportLedger: {
+        parameters: {
+            query?: {
+                /**
+                 * @description First charge due date.
+                 * @example 2026-11-24
+                 */
+                from?: string;
+                /**
+                 * @description Last charge due date.
+                 * @example 2026-11-24
+                 */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CSV text. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /** @example organisation_id,organisation_name,period_start,period_end,taxable_paise,total_paise,due_date,invoice_number,status,outstanding_paise */
+                    "text/csv": string;
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    listLedgerEntries: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Opaque cursor from a previous response's next_cursor.
+                 * @example eyJhZnRlciI6IjAxOTBhMWIyLWMzZDQtN2U1Zi04YTliLTBjMWQyZTNmNGE1YiJ9
+                 */
+                cursor?: components["parameters"]["Cursor"];
+                /**
+                 * @description Page size for vendor lists (default 25, maximum 100).
+                 * @example 25
+                 */
+                limit?: components["parameters"]["VendorLimit"];
+            };
+            header?: never;
+            path: {
+                /**
+                 * @description Which list.
+                 * @example overdue_charges
+                 */
+                list_kind: components["schemas"]["LedgerListKind"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A page, oldest first. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *           "organisation_name": "Example Hospitality",
+                     *           "subject_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *           "due_date": "2026-12-08",
+                     *           "age_days": 3,
+                     *           "amount": {
+                     *             "amount_paise": 153282,
+                     *             "currency": "INR"
+                     *           }
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["LedgerListRowPage"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    listCharges: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Filter by status.
+                 * @example open
+                 */
+                status?: "open" | "paid" | "waived" | "cancelled";
+                /**
+                 * @description Opaque cursor from a previous response's next_cursor.
+                 * @example eyJhZnRlciI6IjAxOTBhMWIyLWMzZDQtN2U1Zi04YTliLTBjMWQyZTNmNGE1YiJ9
+                 */
+                cursor?: components["parameters"]["Cursor"];
+                /**
+                 * @description Page size for vendor lists (default 25, maximum 100).
+                 * @example 25
+                 */
+                limit?: components["parameters"]["VendorLimit"];
+            };
+            header?: never;
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A page, newest period first. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *           "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *           "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *           "kind": "period",
+                     *           "period_start": "2026-12-01",
+                     *           "period_end": "2026-12-31",
+                     *           "taxable": {
+                     *             "amount_paise": 129900,
+                     *             "currency": "INR"
+                     *           },
+                     *           "cgst": {
+                     *             "amount_paise": 11691,
+                     *             "currency": "INR"
+                     *           },
+                     *           "sgst": {
+                     *             "amount_paise": 11691,
+                     *             "currency": "INR"
+                     *           },
+                     *           "igst": {
+                     *             "amount_paise": 0,
+                     *             "currency": "INR"
+                     *           },
+                     *           "total": {
+                     *             "amount_paise": 153282,
+                     *             "currency": "INR"
+                     *           },
+                     *           "due_date": "2026-12-08",
+                     *           "status": "open",
+                     *           "outstanding": {
+                     *             "amount_paise": 153282,
+                     *             "currency": "INR"
+                     *           },
+                     *           "created_at": "2026-11-24T13:05:11.120Z"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ChargePage"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    raiseCharge: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "kind": "period",
+                 *       "period_start": "2026-12-01",
+                 *       "period_end": "2026-12-31"
+                 *     }
+                 */
+                "application/json": components["schemas"]["RaiseCharge"];
+            };
+        };
+        responses: {
+            /** @description The charge. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *       "kind": "period",
+                     *       "period_start": "2026-12-01",
+                     *       "period_end": "2026-12-31",
+                     *       "taxable": {
+                     *         "amount_paise": 129900,
+                     *         "currency": "INR"
+                     *       },
+                     *       "cgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "sgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "igst": {
+                     *         "amount_paise": 0,
+                     *         "currency": "INR"
+                     *       },
+                     *       "total": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "due_date": "2026-12-08",
+                     *       "status": "open",
+                     *       "outstanding": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Charge"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    getCharge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+                /**
+                 * @description Charge id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021
+                 */
+                charge_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The charge. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *       "kind": "period",
+                     *       "period_start": "2026-12-01",
+                     *       "period_end": "2026-12-31",
+                     *       "taxable": {
+                     *         "amount_paise": 129900,
+                     *         "currency": "INR"
+                     *       },
+                     *       "cgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "sgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "igst": {
+                     *         "amount_paise": 0,
+                     *         "currency": "INR"
+                     *       },
+                     *       "total": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "due_date": "2026-12-08",
+                     *       "status": "open",
+                     *       "outstanding": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Charge"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    cancelCharge: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+                /**
+                 * @description Charge id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021
+                 */
+                charge_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "reason": "Duplicate period raised by mistake."
+                 *     }
+                 */
+                "application/json": components["schemas"]["ReasonBody"];
+            };
+        };
+        responses: {
+            /** @description The charge, cancelled. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *       "kind": "period",
+                     *       "period_start": "2026-12-01",
+                     *       "period_end": "2026-12-31",
+                     *       "taxable": {
+                     *         "amount_paise": 129900,
+                     *         "currency": "INR"
+                     *       },
+                     *       "cgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "sgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "igst": {
+                     *         "amount_paise": 0,
+                     *         "currency": "INR"
+                     *       },
+                     *       "total": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "due_date": "2026-12-08",
+                     *       "status": "cancelled",
+                     *       "outstanding": {
+                     *         "amount_paise": 0,
+                     *         "currency": "INR"
+                     *       },
+                     *       "created_at": "2026-11-24T13:05:11.120Z",
+                     *       "reason": "Duplicate period raised by mistake."
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Charge"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    setChargeInvoiceReference: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+                /**
+                 * @description Charge id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021
+                 */
+                charge_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "invoice_reference": {
+                 *         "number": "HQ/2627/0042",
+                 *         "date": "2026-12-01"
+                 *       }
+                 *     }
+                 */
+                "application/json": components["schemas"]["SetInvoiceReference"];
+            };
+        };
+        responses: {
+            /** @description The charge. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *       "kind": "period",
+                     *       "period_start": "2026-12-01",
+                     *       "period_end": "2026-12-31",
+                     *       "taxable": {
+                     *         "amount_paise": 129900,
+                     *         "currency": "INR"
+                     *       },
+                     *       "cgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "sgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "igst": {
+                     *         "amount_paise": 0,
+                     *         "currency": "INR"
+                     *       },
+                     *       "total": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "due_date": "2026-12-08",
+                     *       "status": "open",
+                     *       "outstanding": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "created_at": "2026-11-24T13:05:11.120Z",
+                     *       "invoice_reference": {
+                     *         "number": "HQ/2627/0042",
+                     *         "date": "2026-12-01"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Charge"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    listChargePayments: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Opaque cursor from a previous response's next_cursor.
+                 * @example eyJhZnRlciI6IjAxOTBhMWIyLWMzZDQtN2U1Zi04YTliLTBjMWQyZTNmNGE1YiJ9
+                 */
+                cursor?: components["parameters"]["Cursor"];
+                /**
+                 * @description Page size for vendor lists (default 25, maximum 100).
+                 * @example 25
+                 */
+                limit?: components["parameters"]["VendorLimit"];
+            };
+            header?: never;
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+                /**
+                 * @description Charge id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021
+                 */
+                charge_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A page. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8031",
+                     *           "charge_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *           "amount": {
+                     *             "amount_paise": 153282,
+                     *             "currency": "INR"
+                     *           },
+                     *           "method": "upi",
+                     *           "reference": "UTR1234567890",
+                     *           "received_on": "2026-12-02",
+                     *           "recorded_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a78",
+                     *           "created_at": "2026-11-24T13:05:11.120Z"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["LedgerPaymentPage"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    recordPayment: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+                /**
+                 * @description Charge id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021
+                 */
+                charge_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "amount": {
+                 *         "amount_paise": 153282,
+                 *         "currency": "INR"
+                 *       },
+                 *       "method": "upi",
+                 *       "reference": "UTR1234567890",
+                 *       "received_on": "2026-12-02"
+                 *     }
+                 */
+                "application/json": components["schemas"]["RecordPayment"];
+            };
+        };
+        responses: {
+            /** @description The payment. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8031",
+                     *       "charge_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *       "amount": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "method": "upi",
+                     *       "reference": "UTR1234567890",
+                     *       "received_on": "2026-12-02",
+                     *       "recorded_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a78",
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["LedgerPayment"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["Overpayment"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    reversePayment: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+                /**
+                 * @description Charge id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021
+                 */
+                charge_id: components["schemas"]["Id"];
+                /**
+                 * @description Payment id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8031
+                 */
+                payment_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "reason": "Duplicate period raised by mistake."
+                 *     }
+                 */
+                "application/json": components["schemas"]["ReasonBody"];
+            };
+        };
+        responses: {
+            /** @description The reversing row. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8032",
+                     *       "charge_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *       "amount": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "method": "upi",
+                     *       "reference": "UTR1234567890",
+                     *       "received_on": "2026-12-02",
+                     *       "recorded_by": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a78",
+                     *       "created_at": "2026-11-24T13:05:11.120Z",
+                     *       "reversal_of": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8031",
+                     *       "reason": "Duplicate period raised by mistake."
+                     *     }
+                     */
+                    "application/json": components["schemas"]["LedgerPayment"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    waiveCharge: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+                /**
+                 * @description Charge id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021
+                 */
+                charge_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "reason": "Duplicate period raised by mistake."
+                 *     }
+                 */
+                "application/json": components["schemas"]["ReasonBody"];
+            };
+        };
+        responses: {
+            /** @description The charge, waived. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8021",
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "subscription_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *       "kind": "period",
+                     *       "period_start": "2026-12-01",
+                     *       "period_end": "2026-12-31",
+                     *       "taxable": {
+                     *         "amount_paise": 129900,
+                     *         "currency": "INR"
+                     *       },
+                     *       "cgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "sgst": {
+                     *         "amount_paise": 11691,
+                     *         "currency": "INR"
+                     *       },
+                     *       "igst": {
+                     *         "amount_paise": 0,
+                     *         "currency": "INR"
+                     *       },
+                     *       "total": {
+                     *         "amount_paise": 153282,
+                     *         "currency": "INR"
+                     *       },
+                     *       "due_date": "2026-12-08",
+                     *       "status": "waived",
+                     *       "outstanding": {
+                     *         "amount_paise": 0,
+                     *         "currency": "INR"
+                     *       },
+                     *       "created_at": "2026-11-24T13:05:11.120Z",
+                     *       "reason": "Duplicate period raised by mistake."
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Charge"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    closeOrganisation: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "approval_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6d",
+                 *       "ticket": "SUP-2041",
+                 *       "reason": "Owner asked to close the outlet group.",
+                 *       "owner_export_offered": true
+                 *     }
+                 */
+                "application/json": components["schemas"]["ExecuteLifecycle"];
+            };
+        };
+        responses: {
+            /** @description The organisation after the action. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "status": "closed",
+                     *       "changed_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["LifecycleResult"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["ExecuteConflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    reinstateOrganisation: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "approval_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6d",
+                 *       "ticket": "SUP-2041",
+                 *       "reason": "Owner asked to close the outlet group.",
+                 *       "owner_export_offered": true
+                 *     }
+                 */
+                "application/json": components["schemas"]["ExecuteLifecycle"];
+            };
+        };
+        responses: {
+            /** @description The organisation after the action. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "status": "active",
+                     *       "changed_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["LifecycleResult"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["ExecuteConflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    getOrganisationSubscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The subscription. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "current": {
+                     *         "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *         "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *         "plan_key": "table_service",
+                     *         "plan_version": 1,
+                     *         "cycle": "monthly",
+                     *         "agreed_price": {
+                     *           "amount_paise": 129900,
+                     *           "currency": "INR"
+                     *         },
+                     *         "addons": [],
+                     *         "start_date": "2026-12-01",
+                     *         "paid_through": "2026-12-31",
+                     *         "state": "active",
+                     *         "overdue": false,
+                     *         "cancel_at_period_end": false,
+                     *         "outlets_over_limit": false,
+                     *         "created_at": "2026-11-24T13:05:11.120Z"
+                     *       },
+                     *       "history": []
+                     *     }
+                     */
+                    "application/json": components["schemas"]["SubscriptionHistory"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    changeSubscription: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "plan_key": "table_service",
+                 *       "plan_version": 1,
+                 *       "cycle": "annual",
+                 *       "effective_from": "2027-01-01"
+                 *     }
+                 */
+                "application/json": components["schemas"]["ChangeSubscription"];
+            };
+        };
+        responses: {
+            /** @description The new subscription row. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "plan_key": "table_service",
+                     *       "plan_version": 1,
+                     *       "cycle": "annual",
+                     *       "agreed_price": {
+                     *         "amount_paise": 129900,
+                     *         "currency": "INR"
+                     *       },
+                     *       "addons": [],
+                     *       "start_date": "2026-12-01",
+                     *       "paid_through": "2026-12-31",
+                     *       "state": "active",
+                     *       "overdue": false,
+                     *       "cancel_at_period_end": false,
+                     *       "outlets_over_limit": false,
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Subscription"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    startSubscription: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "plan_key": "table_service",
+                 *       "plan_version": 1,
+                 *       "cycle": "monthly",
+                 *       "start_date": "2026-12-01"
+                 *     }
+                 */
+                "application/json": components["schemas"]["StartSubscription"];
+            };
+        };
+        responses: {
+            /** @description The subscription. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "plan_key": "table_service",
+                     *       "plan_version": 1,
+                     *       "cycle": "monthly",
+                     *       "agreed_price": {
+                     *         "amount_paise": 129900,
+                     *         "currency": "INR"
+                     *       },
+                     *       "addons": [],
+                     *       "start_date": "2026-12-01",
+                     *       "paid_through": "2026-12-31",
+                     *       "state": "active",
+                     *       "overdue": false,
+                     *       "cancel_at_period_end": false,
+                     *       "outlets_over_limit": false,
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Subscription"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    cancelSubscription: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "reason": "Owner asked to stop after the current period."
+                 *     }
+                 */
+                "application/json": components["schemas"]["CancelSubscription"];
+            };
+        };
+        responses: {
+            /** @description The subscription. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f8011",
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "plan_key": "table_service",
+                     *       "plan_version": 1,
+                     *       "cycle": "monthly",
+                     *       "agreed_price": {
+                     *         "amount_paise": 129900,
+                     *         "currency": "INR"
+                     *       },
+                     *       "addons": [],
+                     *       "start_date": "2026-12-01",
+                     *       "paid_through": "2026-12-31",
+                     *       "state": "active",
+                     *       "overdue": false,
+                     *       "cancel_at_period_end": true,
+                     *       "outlets_over_limit": false,
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Subscription"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    suspendOrganisation: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Organisation id.
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60
+                 */
+                organisation_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "approval_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6d",
+                 *       "ticket": "SUP-2041",
+                 *       "reason": "Owner asked to close the outlet group.",
+                 *       "owner_export_offered": true
+                 *     }
+                 */
+                "application/json": components["schemas"]["ExecuteLifecycle"];
+            };
+        };
+        responses: {
+            /** @description The organisation after the action. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "organisation_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a60",
+                     *       "status": "suspended",
+                     *       "changed_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["LifecycleResult"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["ExecuteConflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    listPlans: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Opaque cursor from a previous response's next_cursor.
+                 * @example eyJhZnRlciI6IjAxOTBhMWIyLWMzZDQtN2U1Zi04YTliLTBjMWQyZTNmNGE1YiJ9
+                 */
+                cursor?: components["parameters"]["Cursor"];
+                /**
+                 * @description Page size for vendor lists (default 25, maximum 100).
+                 * @example 25
+                 */
+                limit?: components["parameters"]["VendorLimit"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A page. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "key": "table_service",
+                     *           "name_key": "plan.table_service",
+                     *           "versions": [
+                     *             {
+                     *               "feature_keys": [
+                     *                 "restaurant.core",
+                     *                 "restaurant.kds",
+                     *                 "restaurant.captain",
+                     *                 "restaurant.reports.core"
+                     *               ],
+                     *               "included_outlets": 1,
+                     *               "prices": [
+                     *                 {
+                     *                   "cycle": "monthly",
+                     *                   "list_price": {
+                     *                     "amount_paise": 129900,
+                     *                     "currency": "INR"
+                     *                   }
+                     *                 }
+                     *               ],
+                     *               "version": 1,
+                     *               "state": "draft",
+                     *               "created_at": "2026-11-24T13:05:11.120Z"
+                     *             }
+                     *           ],
+                     *           "created_at": "2026-11-24T13:05:11.120Z"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["PlanPage"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    createPlan: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "key": "table_service",
+                 *       "name_key": "plan.table_service",
+                 *       "version": {
+                 *         "feature_keys": [
+                 *           "restaurant.core",
+                 *           "restaurant.kds",
+                 *           "restaurant.captain",
+                 *           "restaurant.reports.core"
+                 *         ],
+                 *         "included_outlets": 1,
+                 *         "prices": [
+                 *           {
+                 *             "cycle": "monthly",
+                 *             "list_price": {
+                 *               "amount_paise": 129900,
+                 *               "currency": "INR"
+                 *             }
+                 *           }
+                 *         ]
+                 *       }
+                 *     }
+                 */
+                "application/json": components["schemas"]["CreatePlan"];
+            };
+        };
+        responses: {
+            /** @description The plan. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "key": "table_service",
+                     *       "name_key": "plan.table_service",
+                     *       "versions": [
+                     *         {
+                     *           "feature_keys": [
+                     *             "restaurant.core",
+                     *             "restaurant.kds",
+                     *             "restaurant.captain",
+                     *             "restaurant.reports.core"
+                     *           ],
+                     *           "included_outlets": 1,
+                     *           "prices": [
+                     *             {
+                     *               "cycle": "monthly",
+                     *               "list_price": {
+                     *                 "amount_paise": 129900,
+                     *                 "currency": "INR"
+                     *               }
+                     *             }
+                     *           ],
+                     *           "version": 1,
+                     *           "state": "draft",
+                     *           "created_at": "2026-11-24T13:05:11.120Z"
+                     *         }
+                     *       ],
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Plan"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    getPlan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Plan key.
+                 * @example table_service
+                 */
+                plan_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The plan. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "key": "table_service",
+                     *       "name_key": "plan.table_service",
+                     *       "versions": [
+                     *         {
+                     *           "feature_keys": [
+                     *             "restaurant.core",
+                     *             "restaurant.kds",
+                     *             "restaurant.captain",
+                     *             "restaurant.reports.core"
+                     *           ],
+                     *           "included_outlets": 1,
+                     *           "prices": [
+                     *             {
+                     *               "cycle": "monthly",
+                     *               "list_price": {
+                     *                 "amount_paise": 129900,
+                     *                 "currency": "INR"
+                     *               }
+                     *             }
+                     *           ],
+                     *           "version": 1,
+                     *           "state": "draft",
+                     *           "created_at": "2026-11-24T13:05:11.120Z"
+                     *         }
+                     *       ],
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Plan"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    createPlanVersion: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Plan key.
+                 * @example table_service
+                 */
+                plan_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "feature_keys": [
+                 *         "restaurant.core",
+                 *         "restaurant.kds",
+                 *         "restaurant.captain",
+                 *         "restaurant.reports.core"
+                 *       ],
+                 *       "included_outlets": 1,
+                 *       "prices": [
+                 *         {
+                 *           "cycle": "monthly",
+                 *           "list_price": {
+                 *             "amount_paise": 129900,
+                 *             "currency": "INR"
+                 *           }
+                 *         }
+                 *       ]
+                 *     }
+                 */
+                "application/json": components["schemas"]["PlanVersionDraft"];
+            };
+        };
+        responses: {
+            /** @description The new draft. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "feature_keys": [
+                     *         "restaurant.core",
+                     *         "restaurant.kds",
+                     *         "restaurant.captain",
+                     *         "restaurant.reports.core"
+                     *       ],
+                     *       "included_outlets": 1,
+                     *       "prices": [
+                     *         {
+                     *           "cycle": "monthly",
+                     *           "list_price": {
+                     *             "amount_paise": 129900,
+                     *             "currency": "INR"
+                     *           }
+                     *         }
+                     *       ],
+                     *       "version": 2,
+                     *       "state": "draft",
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["PlanVersion"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    activatePlanVersion: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Plan key.
+                 * @example table_service
+                 */
+                plan_key: string;
+                /**
+                 * @description Version number.
+                 * @example 1
+                 */
+                version: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The active version. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "feature_keys": [
+                     *         "restaurant.core",
+                     *         "restaurant.kds",
+                     *         "restaurant.captain",
+                     *         "restaurant.reports.core"
+                     *       ],
+                     *       "included_outlets": 1,
+                     *       "prices": [
+                     *         {
+                     *           "cycle": "monthly",
+                     *           "list_price": {
+                     *             "amount_paise": 129900,
+                     *             "currency": "INR"
+                     *           }
+                     *         }
+                     *       ],
+                     *       "version": 1,
+                     *       "state": "active",
+                     *       "created_at": "2026-11-24T13:05:11.120Z",
+                     *       "activated_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["PlanVersion"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    retirePlanVersion: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Plan key.
+                 * @example table_service
+                 */
+                plan_key: string;
+                /**
+                 * @description Version number.
+                 * @example 1
+                 */
+                version: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The retired version; existing subscriptions keep it. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "feature_keys": [
+                     *         "restaurant.core",
+                     *         "restaurant.kds",
+                     *         "restaurant.captain",
+                     *         "restaurant.reports.core"
+                     *       ],
+                     *       "included_outlets": 1,
+                     *       "prices": [
+                     *         {
+                     *           "cycle": "monthly",
+                     *           "list_price": {
+                     *             "amount_paise": 129900,
+                     *             "currency": "INR"
+                     *           }
+                     *         }
+                     *       ],
+                     *       "version": 1,
+                     *       "state": "retired",
+                     *       "created_at": "2026-11-24T13:05:11.120Z",
+                     *       "retired_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["PlanVersion"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    listTaxRuleSetMasters: {
+        parameters: {
+            query?: {
+                /**
+                 * @description Opaque cursor from a previous response's next_cursor.
+                 * @example eyJhZnRlciI6IjAxOTBhMWIyLWMzZDQtN2U1Zi04YTliLTBjMWQyZTNmNGE1YiJ9
+                 */
+                cursor?: components["parameters"]["Cursor"];
+                /**
+                 * @description Page size for vendor lists (default 25, maximum 100).
+                 * @example 25
+                 */
+                limit?: components["parameters"]["VendorLimit"];
+                /**
+                 * @description Filter by state.
+                 * @example draft
+                 */
+                state?: "draft" | "signed" | "published";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A page. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+                     *           "version": 2,
+                     *           "revision": 1,
+                     *           "name": "GST restaurant services 2026 B",
+                     *           "effective_date": "2026-12-15",
+                     *           "calc_v": 1,
+                     *           "state": "draft",
+                     *           "review_status": "unreviewed",
+                     *           "rules": [
+                     *             {
+                     *               "tax_class": "fnb_standard",
+                     *               "regime": "regular",
+                     *               "specified_premises": false,
+                     *               "order_channel": "dine_in",
+                     *               "doc_type": "tax_invoice",
+                     *               "gst_applies": true,
+                     *               "cgst_bp": 250,
+                     *               "sgst_bp": 250,
+                     *               "igst_bp": 0
+                     *             }
+                     *           ],
+                     *           "created_at": "2026-11-24T13:05:11.120Z"
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["TaxRuleSetMasterPage"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    createTaxRuleSetDraft: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "name": "GST restaurant services 2026 B",
+                 *       "effective_date": "2026-12-15",
+                 *       "calc_v": 1,
+                 *       "rules": [
+                 *         {
+                 *           "tax_class": "fnb_standard",
+                 *           "regime": "regular",
+                 *           "specified_premises": false,
+                 *           "order_channel": "dine_in",
+                 *           "doc_type": "tax_invoice",
+                 *           "gst_applies": true,
+                 *           "cgst_bp": 250,
+                 *           "sgst_bp": 250,
+                 *           "igst_bp": 0
+                 *         }
+                 *       ]
+                 *     }
+                 */
+                "application/json": components["schemas"]["TaxRuleSetDraft"];
+            };
+        };
+        responses: {
+            /** @description The draft. A replay returns the same draft. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+                     *       "version": 2,
+                     *       "revision": 1,
+                     *       "name": "GST restaurant services 2026 B",
+                     *       "effective_date": "2026-12-15",
+                     *       "calc_v": 1,
+                     *       "state": "draft",
+                     *       "review_status": "unreviewed",
+                     *       "rules": [
+                     *         {
+                     *           "tax_class": "fnb_standard",
+                     *           "regime": "regular",
+                     *           "specified_premises": false,
+                     *           "order_channel": "dine_in",
+                     *           "doc_type": "tax_invoice",
+                     *           "gst_applies": true,
+                     *           "cgst_bp": 250,
+                     *           "sgst_bp": 250,
+                     *           "igst_bp": 0
+                     *         }
+                     *       ],
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["TaxRuleSetMaster"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    getTaxRuleSetMaster: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /**
+                 * @description Rule set id.
+                 * @example 72bdd3f5-68b5-59b0-8e62-2075a1f43c47
+                 */
+                rule_set_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The version; the ETag header carries its revision. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+                     *       "version": 2,
+                     *       "revision": 1,
+                     *       "name": "GST restaurant services 2026 B",
+                     *       "effective_date": "2026-12-15",
+                     *       "calc_v": 1,
+                     *       "state": "draft",
+                     *       "review_status": "unreviewed",
+                     *       "rules": [
+                     *         {
+                     *           "tax_class": "fnb_standard",
+                     *           "regime": "regular",
+                     *           "specified_premises": false,
+                     *           "order_channel": "dine_in",
+                     *           "doc_type": "tax_invoice",
+                     *           "gst_applies": true,
+                     *           "cgst_bp": 250,
+                     *           "sgst_bp": 250,
+                     *           "igst_bp": 0
+                     *         }
+                     *       ],
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["TaxRuleSetMaster"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    deleteTaxRuleSetDraft: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Rule set id.
+                 * @example 72bdd3f5-68b5-59b0-8e62-2075a1f43c47
+                 */
+                rule_set_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    updateTaxRuleSetDraft: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Entity tag of the version being edited (from the last read); a stale tag returns 412 with code precondition_failed.
+                 * @example "1"
+                 */
+                "If-Match": components["parameters"]["IfMatch"];
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Rule set id.
+                 * @example 72bdd3f5-68b5-59b0-8e62-2075a1f43c47
+                 */
+                rule_set_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "name": "GST restaurant services 2026 B",
+                 *       "effective_date": "2026-12-15",
+                 *       "calc_v": 1,
+                 *       "rules": [
+                 *         {
+                 *           "tax_class": "fnb_standard",
+                 *           "regime": "regular",
+                 *           "specified_premises": false,
+                 *           "order_channel": "dine_in",
+                 *           "doc_type": "tax_invoice",
+                 *           "gst_applies": true,
+                 *           "cgst_bp": 250,
+                 *           "sgst_bp": 250,
+                 *           "igst_bp": 0
+                 *         }
+                 *       ]
+                 *     }
+                 */
+                "application/json": components["schemas"]["TaxRuleSetDraft"];
+            };
+        };
+        responses: {
+            /** @description The updated draft. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+                     *       "version": 2,
+                     *       "revision": 2,
+                     *       "name": "GST restaurant services 2026 B",
+                     *       "effective_date": "2026-12-15",
+                     *       "calc_v": 1,
+                     *       "state": "draft",
+                     *       "review_status": "unreviewed",
+                     *       "rules": [
+                     *         {
+                     *           "tax_class": "fnb_standard",
+                     *           "regime": "regular",
+                     *           "specified_premises": false,
+                     *           "order_channel": "dine_in",
+                     *           "doc_type": "tax_invoice",
+                     *           "gst_applies": true,
+                     *           "cgst_bp": 250,
+                     *           "sgst_bp": 250,
+                     *           "igst_bp": 0
+                     *         }
+                     *       ],
+                     *       "created_at": "2026-11-24T13:05:11.120Z"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["TaxRuleSetMaster"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            412: components["responses"]["PreconditionFailed"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    publishTaxRuleSet: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Rule set id.
+                 * @example 72bdd3f5-68b5-59b0-8e62-2075a1f43c47
+                 */
+                rule_set_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "approval_id": "0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a6d"
+                 *     }
+                 */
+                "application/json": components["schemas"]["ExecutePublication"];
+            };
+        };
+        responses: {
+            /** @description The published version. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+                     *       "version": 2,
+                     *       "revision": 1,
+                     *       "name": "GST restaurant services 2026 B",
+                     *       "effective_date": "2026-12-15",
+                     *       "calc_v": 1,
+                     *       "state": "published",
+                     *       "review_status": "reviewed",
+                     *       "rules": [
+                     *         {
+                     *           "tax_class": "fnb_standard",
+                     *           "regime": "regular",
+                     *           "specified_premises": false,
+                     *           "order_channel": "dine_in",
+                     *           "doc_type": "tax_invoice",
+                     *           "gst_applies": true,
+                     *           "cgst_bp": 250,
+                     *           "sgst_bp": 250,
+                     *           "igst_bp": 0
+                     *         }
+                     *       ],
+                     *       "created_at": "2026-11-24T13:05:11.120Z",
+                     *       "signoff": {
+                     *         "reviewer_name": "A. Reviewer",
+                     *         "signed_on": "2026-11-20",
+                     *         "reference_note": "CA advice note 2026-11 ref 12"
+                     *       },
+                     *       "published_at": "2026-11-24T13:09:40.000Z",
+                     *       "organisations_total": 3
+                     *     }
+                     */
+                    "application/json": components["schemas"]["TaxRuleSetMaster"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["ExecuteConflict"];
+            422: components["responses"]["LeadTooShort"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    signTaxRuleSet: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Rule set id.
+                 * @example 72bdd3f5-68b5-59b0-8e62-2075a1f43c47
+                 */
+                rule_set_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "signoff": {
+                 *         "reviewer_name": "A. Reviewer",
+                 *         "signed_on": "2026-11-20",
+                 *         "reference_note": "CA advice note 2026-11 ref 12"
+                 *       }
+                 *     }
+                 */
+                "application/json": components["schemas"]["SignTaxRuleSet"];
+            };
+        };
+        responses: {
+            /** @description The signed version. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "72bdd3f5-68b5-59b0-8e62-2075a1f43c47",
+                     *       "version": 2,
+                     *       "revision": 1,
+                     *       "name": "GST restaurant services 2026 B",
+                     *       "effective_date": "2026-12-15",
+                     *       "calc_v": 1,
+                     *       "state": "signed",
+                     *       "review_status": "reviewed",
+                     *       "rules": [
+                     *         {
+                     *           "tax_class": "fnb_standard",
+                     *           "regime": "regular",
+                     *           "specified_premises": false,
+                     *           "order_channel": "dine_in",
+                     *           "doc_type": "tax_invoice",
+                     *           "gst_applies": true,
+                     *           "cgst_bp": 250,
+                     *           "sgst_bp": 250,
+                     *           "igst_bp": 0
+                     *         }
+                     *       ],
+                     *       "created_at": "2026-11-24T13:05:11.120Z",
+                     *       "signoff": {
+                     *         "reviewer_name": "A. Reviewer",
+                     *         "signed_on": "2026-11-20",
+                     *         "reference_note": "CA advice note 2026-11 ref 12"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["TaxRuleSetMaster"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+            422: components["responses"]["ValidationFailed"];
+            503: components["responses"]["UpstreamUnavailable"];
+        };
+    };
+    validateTaxRuleSet: {
+        parameters: {
+            query?: never;
+            header: {
+                /**
+                 * @description Per-session CSRF token from signIn or getSession. Required on every state-changing request together with a matching Origin.
+                 * @example csrf_example_token
+                 */
+                "X-CSRF-Token": string;
+                /**
+                 * @description Client-generated unique key, 1-128 visible ASCII characters (a UUIDv7 is recommended). A replay with the same key and request returns the original status and body without repeating the effect. The same key with a different request returns 422 (code idempotency.mismatch); the same key while the first request is still in progress returns 409 (code idempotency.in_progress); an invalid key returns 422 (code idempotency.key_invalid).
+                 * @example 0190a1b2-c3d4-7e5f-8a9b-0c1d2e3f4a5b
+                 */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /**
+                 * @description Rule set id.
+                 * @example 72bdd3f5-68b5-59b0-8e62-2075a1f43c47
+                 */
+                rule_set_id: components["schemas"]["Id"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The outcome; valid or not, the call succeeds. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "valid": true,
+                     *       "errors": [],
+                     *       "vectors_total": 65,
+                     *       "vectors_passed": 65
+                     *     }
+                     */
+                    "application/json": components["schemas"]["TaxRuleSetValidation"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["ForbiddenOrCsrf"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
             503: components["responses"]["UpstreamUnavailable"];
         };
     };

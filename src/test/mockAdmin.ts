@@ -8,7 +8,7 @@ import fixture from "./fixtures/admin-double.json";
  * overrides single operations with `on(...)` to drive a state (a device list with every state, a
  * 503, a refusal) and reads `calls` to assert what the browser sent.
  */
-export type Recorded = { method: string; template: string; status: number; body: unknown };
+export type Recorded = { method: string; template: string; status: number; body: unknown; contentType?: string };
 export type MockRequest = {
   method: string;
   path: string;
@@ -17,7 +17,7 @@ export type MockRequest = {
   headers: Headers;
   params: Record<string, string>;
 };
-export type MockResponse = { status: number; body?: unknown; problem?: boolean };
+export type MockResponse = { status: number; body?: unknown; problem?: boolean; contentType?: string };
 export type Handler = (req: MockRequest) => MockResponse | Promise<MockResponse>;
 
 export const CSRF = fixture.csrf;
@@ -74,9 +74,9 @@ export function createMockAdmin(options: { signedIn?: boolean } = {}) {
     calls.push({ method, path: url.pathname, query: url.search, body, headers: req.headers });
 
     const reply = (r: MockResponse) =>
-      new Response(r.status === 204 || r.body === null || r.body === undefined ? null : JSON.stringify(r.body), {
+      new Response(r.status === 204 || r.body === null || r.body === undefined ? null : r.contentType ? String(r.body) : JSON.stringify(r.body), {
         status: r.status,
-        headers: r.status === 204 ? {} : { "content-type": r.problem ? "application/problem+json" : "application/json" },
+        headers: r.status === 204 ? {} : { "content-type": r.contentType ?? (r.problem ? "application/problem+json" : "application/json") },
       });
 
     if (req.headers.has("authorization")) return reply(problem(401, "auth.invalid_token"));
@@ -96,7 +96,7 @@ export function createMockAdmin(options: { signedIn?: boolean } = {}) {
     const handler = overrides.get(route.key);
     if (handler) return reply(await handler({ method, path: url.pathname, query: url.searchParams, body, headers: req.headers, params }));
     if (route.key === "POST /v1/sessions") signedIn = true;
-    return reply({ status: route.rec.status, body: structuredClone(route.rec.body) });
+    return reply({ status: route.rec.status, body: structuredClone(route.rec.body), ...(route.rec.contentType ? { contentType: route.rec.contentType } : {}) });
   };
 
   return {
